@@ -1,0 +1,2907 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE snippets [
+<!ELEMENT snippets (snippet)+>
+<!ELEMENT snippet (title, language, ui, code)>
+<!ELEMENT title (#PCDATA)>
+<!ELEMENT language (#PCDATA)>
+<!ELEMENT ui (#PCDATA)>
+<!ELEMENT code (#PCDATA)>
+]>
+
+<snippets>
+
+
+
+  <snippet>
+    <title>Main</title>
+    <language>AutoIt</language>
+    <ui>SAPGUI</ui>
+    <code>
+;-Begin-----------------------------------------------------------------
+
+;-Directives------------------------------------------------------------
+AutoItSetOption(&quot;MustDeclareVars&quot;, 1)
+
+;-Sub Main--------------------------------------------------------------
+Func Main()
+
+  Local $SapGuiAuto, $application, $connection, $session
+
+  $SapGuiAuto = ObjGet(&quot;SAPGUI&quot;)
+  If Not IsObj($SapGuiAuto) Or @Error Then
+    Return
+  EndIf
+
+  $application = $SapGuiAuto.GetScriptingEngine()
+  If Not IsObj($application) Then
+    Return
+  EndIf
+
+  $application.HistoryEnabled = False
+
+  $connection = $application.Children(0)
+  If Not IsObj($connection) Then
+    Return
+  EndIf
+
+  If $connection.DisabledByServer = True Then
+    Return
+  EndIf
+
+  $session = $connection.Children(0)
+  If Not IsObj($session) Then
+    Return
+  EndIf
+
+  If $session.Busy = True Then
+    Return
+  EndIf
+
+  If $session.Info.IsLowSpeedConnection = True Then
+    Return
+  EndIf
+
+  ;&gt;Insert your SAP GUI Scripting code here&lt;
+
+  $application.HistoryEnabled = True
+
+EndFunc
+
+;-Main------------------------------------------------------------------
+Main()
+
+;-End-------------------------------------------------------------------
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Main</title>
+    <language>Java</language>
+    <ui>Web</ui>
+    <code>
+//-Begin----------------------------------------------------------------
+
+//-Import---------------------------------------------------------------
+import java.util.HashMap;
+import java.util.Map;
+import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.*;
+
+public class Selenium {
+
+  public static void main(String[] args) {
+
+    //-Set path to chromedriver-----------------------------------------
+    System.setProperty(&quot;webdriver.chrome.driver&quot;,
+      &quot;C:/Program Files/Selenium/chromedriver.exe&quot;);
+
+    //-Set path to chrome browser---------------------------------------
+    Map&lt;String, Object&gt; chromeOptions = new HashMap&lt;String, Object&gt;();
+    chromeOptions.put(&quot;binary&quot;, &quot;C:/Program Files/Google/Chrome/Application/chrome.exe&quot;);
+    DesiredCapabilities capabilities = DesiredCapabilities.chrome();
+    capabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
+
+    //-Opens a web browser window---------------------------------------
+    WebDriver driver = new ChromeDriver(capabilities);
+
+    //&gt;Insert your scripting code here&lt;
+
+    driver.close();
+    driver.quit();
+
+    System.exit(0);
+
+  }
+
+}
+
+//-End------------------------------------------------------------------
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Main</title>
+    <language>Java</language>
+    <ui>SAPGUI</ui>
+    <code>
+//-Begin----------------------------------------------------------------
+
+//-Classpath------------------------------------------------------------
+/env -class-path C:\Tracker\jacob\jacob.jar
+
+//-Import---------------------------------------------------------------
+import com.jacob.activeX.*;
+import com.jacob.com.*;
+
+//-Sub Main-------------------------------------------------------------
+void Main() {
+
+  ActiveXComponent SAPROTWr, application, connection, session, Obj;
+  Dispatch ROTEntry;
+  Variant Value, ScriptEngine;
+  Variant[] arg;
+  boolean DisabledByServer, Busy, IsLowSpeedConnection;
+
+  ComThread.InitSTA();
+
+  application = null;
+
+  //-Set SapGuiAuto = GetObject(&quot;SAPGUI&quot;)-------------------------------
+  SAPROTWr = new ActiveXComponent(&quot;SapROTWr.SapROTWrapper&quot;);
+  try {
+    ROTEntry = SAPROTWr.invoke(&quot;GetROTEntry&quot;, &quot;SAPGUI&quot;).toDispatch();
+
+    //-Set application = SapGuiAuto.GetScriptingEngine------------------
+    ScriptEngine = Dispatch.call(ROTEntry, &quot;GetScriptingEngine&quot;);
+    application = new ActiveXComponent(ScriptEngine.toDispatch());
+
+    application.setProperty("HistoryEnabled", false);
+
+    //-Set connection = application.Children(0)-------------------------
+    connection = new ActiveXComponent(
+      application.invoke(&quot;Children&quot;, 0).toDispatch()
+    );
+
+    DisabledByServer = connection.getProperty("DisabledByServer").changeType(Variant.VariantBoolean).getBoolean();
+    if(DisabledByServer == true) {
+      System.out.println("Scripting is disabled by server");
+      //System.exit(1);
+      return;
+    }
+
+    //-Set session = connection.Children(0)-----------------------------
+    session = new ActiveXComponent(
+      connection.invoke(&quot;Children&quot;, 0).toDispatch()
+    );
+
+    Busy = session.getProperty("Busy").changeType(Variant.VariantBoolean).getBoolean();
+    if(Busy == true) {
+      System.out.println("Session is busy");
+      //System.exit(1);
+      return;
+    }
+
+    IsLowSpeedConnection = session.getPropertyAsComponent("Info").getProperty("IsLowSpeedConnection").changeType(Variant.VariantBoolean).getBoolean();
+    if(IsLowSpeedConnection == true) {
+      System.out.println("Connection is low speed");
+      //System.exit(1);
+      return;
+    }
+
+    //&gt;Insert your SAP GUI Scripting code here&lt;
+
+  } catch (Exception e) {
+    System.out.println(e.getMessage().toString());
+  }
+  finally {
+    application.setProperty("HistoryEnabled", true);
+    ComThread.Release();
+  }
+
+}
+
+//-Main-----------------------------------------------------------------
+Main();
+/exit
+
+//-End------------------------------------------------------------------
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Main</title>
+    <language>PowerShell</language>
+    <ui>Web</ui>
+    <code>
+#-Begin-----------------------------------------------------------------
+
+#-Sub Main--------------------------------------------------------------
+Function Main {
+
+  $Url = &quot;&quot;
+  Open $Url
+
+  $script:wait = [OpenQA.Selenium.Support.UI.WebDriverWait]::new($script:driver, [System.TimeSpan]::FromSeconds(30));
+  $script:action = [OpenQA.Selenium.Interactions.Actions]::new($script:driver);
+
+
+  #&gt;Insert your code here&lt;
+
+
+  $script:driver.Close();
+  $script:driver.Quit();
+
+  $script:action = $Null;
+  $script:wait = $Null;
+  $script:driver = $Null;
+
+}
+
+#-Main------------------------------------------------------------------
+LoadSelenium;
+Main;
+
+#-End-------------------------------------------------------------------
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Main</title>
+    <language>PowerShell</language>
+    <ui>SAPGUI</ui>
+    <code>
+#-Begin-----------------------------------------------------------------
+
+#-Includes--------------------------------------------------------------
+.&quot;$PSScriptRoot\COM.ps1&quot;
+
+#-Sub Main--------------------------------------------------------------
+Function Main {
+
+  $SapGuiAuto = Get-Object &quot;SAPGUI&quot;;
+  If ($SapGuiAuto -IsNot [System.__ComObject]) {
+    Return;
+  }
+
+  $application = Invoke-Method $SapGuiAuto &quot;GetScriptingEngine&quot;;
+  If ($application -IsNot [System.__ComObject]) {
+    Free-Object -object $SapGuiAuto;
+    Return;
+  }
+
+  Set-Property -object $application -propertyName "HistoryEnabled" -propertyParameter @($False);
+
+  $connection = Get-Property $application &quot;Children&quot; @(0);
+  If ($Null -eq $connection) {
+    Free-Object -object $application;
+    Free-Object -object $SapGuiAuto;
+    Return;
+  }
+
+  $DisabledByServer = Get-Property $connection "DisabledByServer";
+  If ($True -eq $DisabledByServer) {
+    Return;
+  }
+
+  $session = Get-Property $connection &quot;Children&quot; @(0);
+  If ($Null -eq $session) {
+    Free-Object -object $connection;
+    Free-Object -object $application;
+    Free-Object -object $SapGuiAuto;
+    Return;
+  }
+
+  $Busy = Get-Property $session "Busy";
+  If ($True -eq $Busy) {
+    Return;
+  }
+
+  $Info = Get-Property $session "Info";
+  $IsLowSpeedConnection = Get-Property $Info "IsLowSpeedConnection";
+  If ($True -eq $IsLowSpeedConnection) {
+    Return;
+  }
+
+  #&gt;Insert your SAP GUI Scripting code here&lt;
+
+  Set-Property -object $application -propertyName "HistoryEnabled" -propertyValue @($True);
+
+  Free-Object -object $session;
+  Free-Object -object $connection;
+  Free-Object -object $application;
+  Free-Object -object $SapGuiAuto;
+
+}
+
+#-Main------------------------------------------------------------------
+Main
+
+#-End-------------------------------------------------------------------
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Main</title>
+    <language>PowerShell</language>
+    <ui>Mobile</ui>
+    <code>
+#-Begin-----------------------------------------------------------------
+
+#-Sub Main--------------------------------------------------------------
+Function Main {
+
+  [OpenQA.Selenium.Remote.DesiredCapabilities]$Capabilities = `
+    [OpenQA.Selenium.Remote.DesiredCapabilities]::new();
+  $Capabilities.SetCapability([OpenQA.Selenium.Appium.Enums.MobileCapabilityType]::`
+    DeviceName, &quot;emulator-5554&quot;);
+  $Capabilities.SetCapability([OpenQA.Selenium.Appium.Enums.MobileCapabilityType]::`
+    PlatformVersion, &quot;8.1.0&quot;);
+  $Capabilities.SetCapability([OpenQA.Selenium.Appium.Enums.MobileCapabilityType]::`
+    PlatformName, &quot;Android&quot;);
+  $Capabilities.SetCapability([OpenQA.Selenium.Appium.Enums.AndroidMobileCapabilityType]::`
+    AppPackage, &quot;com.android.calculator2&quot;);
+  $Capabilities.SetCapability([OpenQA.Selenium.Appium.Enums.AndroidMobileCapabilityType]::`
+    AppActivity, &quot;com.android.calculator2.Calculator&quot;);
+
+  [System.Uri]$Uri = [System.Uri]::new(&quot;http://127.0.0.1:4723/wd/hub&quot;);
+
+  $script:driver = `
+    [OpenQA.Selenium.Appium.Android.AndroidDriver[OpenQA.Selenium.Appium.AppiumWebElement]]::`
+    new($Uri, $Capabilities);
+  If ($Null -eq $script:driver) {
+    Return;
+  }
+
+
+  #&gt;Insert your code here&lt;
+
+
+  $script:driver.CloseApp();
+  $script:driver.Quit();
+
+  $script:driver = $Null;
+
+}
+
+#-Main------------------------------------------------------------------
+LoadAppium;
+Main;
+
+#-End-------------------------------------------------------------------
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Main</title>
+    <language>Python</language>
+    <ui>SAPGUI</ui>
+    <code>
+#-Begin-----------------------------------------------------------------
+
+#-Includes--------------------------------------------------------------
+import sys, win32com.client
+
+#-Sub Main--------------------------------------------------------------
+def Main():
+
+  try:
+
+    SapGuiAuto = win32com.client.GetObject(&quot;SAPGUI&quot;)
+    if not type(SapGuiAuto) == win32com.client.CDispatch:
+      return
+
+    application = SapGuiAuto.GetScriptingEngine
+    if not type(application) == win32com.client.CDispatch:
+      SapGuiAuto = None
+      return
+
+    application.HistoryEnabled = False
+
+    connection = application.Children(0)
+    if not type(connection) == win32com.client.CDispatch:
+      application = None
+      SapGuiAuto = None
+      return
+
+    if connection.DisabledByServer == True:
+      connection = None
+      application = None
+      SapGuiAuto = None
+      return
+
+    session = connection.Children(0)
+    if not type(session) == win32com.client.CDispatch:
+      connection = None
+      application = None
+      SapGuiAuto = None
+      return
+
+    if session.Busy == True:
+      session = None
+      connection = None
+      application = None
+      SapGuiAuto = None
+      return
+
+    if session.Info.IsLowSpeedConnection == True:
+      session = None
+      connection = None
+      application = None
+      SapGuiAuto = None
+      return
+
+    #&gt;Insert your SAP GUI Scripting code here&lt;
+
+  except:
+    print(sys.exc_info()[0])
+
+  finally:
+    application.HistoryEnabled = True
+    session = None
+    connection = None
+    application = None
+    SapGuiAuto = None
+
+#-Main------------------------------------------------------------------
+Main()
+
+#-End-------------------------------------------------------------------
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Main</title>
+    <language>WScript</language>
+    <ui>SAPGUI</ui>
+    <code>
+&apos;-Begin-----------------------------------------------------------------
+
+&apos;-Directives------------------------------------------------------------
+Option Explicit
+
+&apos;-Sub Main--------------------------------------------------------------
+Sub Main()
+
+  Dim SapGuiAuto, app, connection, session
+
+  Set SapGuiAuto = GetObject(&quot;SAPGUI&quot;)
+  If Not IsObject(SapGuiAuto) Then
+    Exit Sub
+  End If
+
+  Set app = SapGuiAuto.GetScriptingEngine
+  If Not IsObject(app) Then
+    Exit Sub
+  End If
+
+  app.HistoryEnabled = False
+
+  Set connection = app.Children(0)
+  If Not IsObject(connection) Then
+    Exit Sub
+  End If
+
+  If connection.DisabledByServer = True Then
+    Exit Sub
+  End If
+
+  Set session = connection.Children(0)
+  If Not IsObject(session) Then
+    Exit Sub
+  End If
+
+  If session.Busy = True Then
+    Exit Sub
+  End If
+
+  If session.Info.IsLowSpeedConnection = True Then
+    Exit Sub
+  End If
+
+  &apos;&gt;Insert your SAP GUI Scripting code here&lt;
+
+  app.HistoryEnabled = True
+
+End Sub
+
+&apos;-Main------------------------------------------------------------------
+Main
+
+&apos;-End-------------------------------------------------------------------
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Wait until keypressed</title>
+    <language>PowerShell</language>
+    <ui>All</ui>
+    <code>
+[Void][Console]::WriteLine(&quot;Press key...&quot;);
+[Void][Console]::ReadKey(&quot;NoEcho,IncludeKeyDown&quot;);
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Wait until keypressed</title>
+    <language>Python</language>
+    <ui>All</ui>
+    <code>
+    input(&quot;Press key...&quot;)
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Sleep</title>
+    <language>AutoIt</language>
+    <ui>All</ui>
+    <code>
+  Sleep(1000)
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Sleep</title>
+    <language>Java</language>
+    <ui>All</ui>
+    <code>
+  Thread.sleep(1000);
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Sleep</title>
+    <language>PowerShell</language>
+    <ui>All</ui>
+    <code>
+  Start-Sleep -Milliseconds 1000;
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Sleep</title>
+    <language>Python</language>
+    <ui>All</ui>
+    <code>
+    import time
+    time.sleep(5)
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Sleep</title>
+    <language>WScript</language>
+    <ui>All</ui>
+    <code>
+  WScript.Sleep 1000
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Sub Sleep</title>
+    <language>WScript</language>
+    <ui>All</ui>
+    <code>
+&apos;-Sub Sleep-------------------------------------------------------------
+Sub Sleep(MilliSecondsToWait)
+
+  Dim WshShell
+
+  If Not IsNumeric(MilliSecondsToWait) Then
+    Exit Sub
+  End If
+
+  Set WshShell = CreateObject(&quot;WScript.Shell&quot;)
+  WshShell.Run &quot;%COMSPEC% /c ping -n 1 -w &quot; &amp; _
+    CStr(MilliSecondsToWait) &amp; &quot; 127.255.255.254 > nul&quot;, 0, True
+
+End Sub
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>MessageBox</title>
+    <language>PowerShell</language>
+    <ui>All</ui>
+    <code>
+[Void][System.Windows.Forms.MessageBox]::Show(&quot;Text&quot;, &quot;Caption&quot;, [System.Windows.Forms.MessageBoxButtons]::OK);
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>MessageBox</title>
+    <language>Java</language>
+    <ui>All</ui>
+    <code>
+JOptionPane.showMessageDialog(null, "Text", "Caption", JOptionPane.PLAIN_MESSAGE);
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>WinAPI</title>
+    <language>PowerShell</language>
+    <ui>All</ui>
+    <code>
+Add-Type @&quot;
+
+  using System;
+  using System.Runtime.InteropServices;
+
+  public class WinAPI {
+
+    //-SetForegroundWindow----------------------------------------------
+    [DllImport(&quot;user32.dll&quot;)]
+      [return: MarshalAs(UnmanagedType.Bool)]
+      public static extern bool SetForegroundWindow(IntPtr hWnd);
+
+    //-FindWindow-------------------------------------------------------
+    [DllImport(&quot;user32.dll&quot;, CharSet = CharSet.Auto)]
+      public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+
+    //-OutputDebugString------------------------------------------------
+    [DllImport(&quot;kernel32.dll&quot;)]
+    public static extern void OutputDebugString(string lpOutputString);
+
+}
+
+&quot;@
+
+
+  $hWin = [WinAPI]::FindWindow(&quot;Notepad&quot;, &quot;Unbenannt - Editor&quot;);
+  [WinAPI]::SetForegroundWindow($hWin);
+  [WinAPI]::OutputDebugString(&quot;Notepad&quot;);
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Sub DebugPrint</title>
+    <language>AutoIt</language>
+    <ui>All</ui>
+    <code>
+;-Sub DebugPrint--------------------------------------------------------
+Func DebugPrint
+
+Param(
+  $Message
+)
+
+  $Message = String($Message)
+  DLLCall(&quot;kernel32.dll&quot;, &quot;none&quot;, &quot;OutputDebugString&quot;, &quot;str&quot;, _
+    $Message)
+EndFunc
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Function DebugPrint</title>
+    <language>PowerShell</language>
+    <ui>All</ui>
+    <code>
+#-Sub DebugPrint--------------------------------------------------------
+Function DebugPrint {
+
+  Param(
+    [String]$Message,
+    [String]$Category = &quot;&quot;
+  )
+
+  If ($Category -eq &quot;&quot;) {
+    [System.Diagnostics.Debug]::WriteLine($Message);
+  } Else {
+    [System.Diagnostics.Debug]::WriteLine($Message, $Category);
+  }
+}
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>ClipBoard</title>
+    <language>PowerShell</language>
+    <ui>All</ui>
+    <code>
+&quot;This is a test`r`nThis is a test&quot; | Set-Clipboard;
+$Text = [Windows.Clipboard]::GetText();
+Write-Host $Text;
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>ClipBoard</title>
+    <language>WScript</language>
+    <ui>All</ui>
+    <code>
+Set oIE = CreateObject(&quot;InternetExplorer.Application&quot;)
+oIE.Navigate(&quot;about:blank&quot;)
+oIE.document.parentwindow.clipboardData.SetData &quot;text&quot;, &quot;Your text here&quot;
+Result = oIE.document.parentwindow.clipboardData.GetData(&quot;text&quot;)
+MsgBox Result
+oIE.document.parentwindow.clipboardData.ClearData()
+oIE.Quit
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>AutoItX</title>
+    <language>PowerShell</language>
+    <ui>All</ui>
+    <code>
+#-Includes AutoItX------------------------------------------------------
+Add-Type -Path &quot;$($PSScriptRoot)\AutoItX\AutoItX3.Assembly.dll&quot;;
+Import-Module &quot;$PSScriptRoot\AutoItX\AutoItX.psd1&quot;;
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>GetOSLanguage</title>
+    <language>PowerShell</language>
+    <ui>All</ui>
+    <code>
+#$CultList = [System.Globalization.CultureInfo]::GetCultures(&apos;InstalledWin32Cultures&apos;);
+#$CultList | Out-Gridview -Title &quot;InstalledWin32Cultures&quot;;
+
+Switch((Get-Culture).TwoLetterISOLanguageName) {
+  &quot;de&quot; {
+    Write-Host &quot;de (Deutsch)&quot;;
+  }
+  &quot;en&quot; {
+    Write-Host &quot;en (English)&quot;;
+  }
+  Default {
+    Write-Host &quot;Your Language Code is&quot; `
+    (Get-Culture).TwoLetterISOLanguageName;
+  }
+}
+
+Switch((Get-Culture).Name) {
+  &quot;de-DE&quot; {
+    Write-Host &quot;Deutsch - Deutschland&quot;;
+  }
+  &quot;en-AU&quot; {
+    Write-Host &quot;English - Australia&quot;;
+  }
+  Default {
+    Write-Host &quot;Your Region is&quot; `
+    (Get-Culture).Name;
+  }
+}
+
+Switch((Get-Culture).KeyboardLayoutId) {
+  1031 {
+    Write-Host &quot;Keyboard Layout ID is 1031&quot;;
+  }
+  Default {
+    Write-Host &quot;Your Keyboard Layout ID is&quot; `
+    (Get-Culture).KeyboardLayoutId;
+  }
+}
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Function Check</title>
+    <language>WScript</language>
+    <ui>SAPGUI</ui>
+    <code>
+&apos;-Function Check--------------------------------------------------------
+&apos;-
+&apos;- Checks if a control exists and delivers true, otherwise false
+&apos;-
+&apos;-----------------------------------------------------------------------
+Function Check(Session, Ctrl)
+
+  Dim Result
+
+  On Error Resume Next
+  Session.findById(Ctrl)
+  If Err.Number &lt;&gt; 0 Then
+    Result = vbFalse
+  Else
+    Result = vbTrue
+  End If
+  On Error Goto 0
+  Err.Clear
+  Check = Result
+
+End Function
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Function FindAllByType</title>
+    <language>WScript</language>
+    <ui>SAPGUI</ui>
+    <code>
+  Dim gColl()
+
+&apos;-Function FindAllByType------------------------------------------------
+&apos;-
+&apos;- Delivers of the given object an array of objects of one type
+&apos;-
+&apos;- Example:
+&apos;- Dim Coll
+&apos;- Coll = FindAllByType(session, &quot;GuiLabel&quot;)
+&apos;-
+&apos;-----------------------------------------------------------------------
+Function FindAllByType(Obj, strType)
+
+  Dim cntObj, i, j, Child
+
+  On Error Resume Next
+  cntObj = Obj.Children.Count()
+  If cntObj &gt; 0 Then
+    For i = 0 To cntObj - 1
+      Set Child = Obj.Children.Item(CLng(i))
+      FindAllByType Child, strType
+      If UCase(Child.Type()) = UCase(strType) Then
+        ReDim Preserve gColl(j)
+        Set gColl(j) = Child
+        j = j + 1
+      End If
+    Next
+  End If
+  On Error Goto 0
+  FindAllByType = gColl
+
+End Function
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Function FindAllByTypeEx</title>
+    <language>WScript</language>
+    <ui>SAPGUI</ui>
+    <code>
+  Dim gColl()
+
+&apos;-Function FindAllByTypeEx----------------------------------------------
+&apos;-
+&apos;- Delivers of the given object an array of objects of one type
+&apos;-
+&apos;- Example:
+&apos;- Dim Coll
+&apos;- Coll = FindAllByTypeEx(session, 30) &apos;GuiLabel
+&apos;-
+&apos;-----------------------------------------------------------------------
+Function FindAllByTypeEx(Obj, lngType)
+
+  Dim cntObj, i, j, Child
+
+  On Error Resume Next
+  cntObj = Obj.Children.Count()
+  If cntObj &gt; 0 Then
+    For i = 0 To cntObj - 1
+      Set Child = Obj.Children.Item(CLng(i))
+      FindAllByTypeEx Child, lngType
+      If Child.TypeAsNumber() = lngType Then
+        ReDim Preserve gColl(j)
+        Set gColl(j) = Child
+        j = j + 1
+      End If
+    Next
+  End If
+  On Error Goto 0
+  FindAllByTypeEx = gColl
+
+End Function
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Function GetGridAsText</title>
+    <language>WScript</language>
+    <ui>SAPGUI</ui>
+    <code>
+&apos;-Function GetGridAsText------------------------------------------------
+Function GetGridAsText(Grid)
+
+  Dim Columns, i, j, Text
+
+  Set Columns = Grid.ColumnOrder()
+
+  For i = 0 To Grid.RowCount() - 1
+    For j = 0 To Grid.ColumnCount() - 1
+      If j = 0 Then
+        Text = Text &amp; Grid.GetCellValue(i, CStr(Columns(j)))
+      ElseIf j &gt; 0 And j &lt; Grid.ColumnCount() - 1 Then
+        Text = Text &amp; &quot;;&quot; &amp; Grid.GetCellValue(i, CStr(Columns(j)))
+      ElseIf j = Grid.ColumnCount() - 1 Then
+        Text = Text &amp; &quot;;&quot; &amp; Grid.GetCellValue(i, CStr(Columns(j))) &amp; _
+          vbCrLf
+      End If
+    Next
+    If i Mod 32 = 0 Then
+      Grid.SetCurrentCell i, CStr(Columns(0))
+    End If
+  Next
+
+  GetGridAsText = Text
+
+End Function
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Function GetGridAsText</title>
+    <language>AutoIt</language>
+    <ui>SAPGUI</ui>
+    <code>
+;-Function GetGridAsText------------------------------------------------
+Func GetGridAsText($Grid)
+
+  Local $Columns, $i, $j, $Text
+
+  $Columns = $Grid.ColumnOrder()
+
+  For $i = 0 To $Grid.RowCount() - 1
+    For $j = 0 To $Grid.ColumnCount() - 1
+      If $j = 0 Then
+        $Text = $Text &amp; $Grid.GetCellValue($i, $Columns($j))
+      ElseIf $j &gt; 0 And $j &lt; $Grid.ColumnCount() - 1 Then
+        $Text = $Text &amp; &quot;;&quot; &amp; $Grid.GetCellValue($i, $Columns($j))
+      ElseIf $j = $Grid.ColumnCount() - 1 Then
+        $Text = $Text &amp; &quot;;&quot; &amp; $Grid.GetCellValue($i, _
+          $Columns($j)) &amp; @CRLF
+      EndIf
+    Next
+    If Mod($i, 32) = 0 Then
+      $Grid.SetCurrentCell($i, $Columns(0))
+    EndIf
+  Next
+
+  Return $Text
+
+EndFunc
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Sub GetInfo (Host)</title>
+    <language>PowerShell</language>
+    <ui>SAPGUI</ui>
+    <code>
+#-Function GetInfo------------------------------------------------------
+#-
+#- Writes information about the given session on the console
+#-
+#- Example:
+#- GetInfo $session
+#-
+#-----------------------------------------------------------------------
+Function GetInfo {
+
+  Param(
+    [System.__ComObject]$session
+  )
+
+  $Info = Get-Property $session &quot;Info&quot;;
+  If ($Info -is [System.__ComObject]) {
+    $Transaction = Get-Property $Info &quot;Transaction&quot;;
+    Write-Host &quot;Tansaction:  &quot; $Transaction;
+    $Program = Get-Property $Info &quot;Program&quot;;
+    Write-Host &quot;Program:     &quot; $Program;
+    $ScreenNumber = Get-Property $Info &quot;ScreenNumber&quot;;
+    Write-Host &quot;ScreenNumber:&quot; $ScreenNumber;
+    $CodePage = Get-Property $Info &quot;CodePage&quot;;
+    Write-Host &quot;CodePage:    &quot; $CodePage;
+    $GuiCodePage = Get-Property $Info &quot;GuiCodePage&quot;;
+    Write-Host &quot;GuiCodePage: &quot; $GuiCodePage;
+    $I18NMode = Get-Property $Info &quot;I18NMode&quot;;
+    Write-Host &quot;I18NMode:    &quot; $I18NMode;
+    $Language = Get-Property $Info &quot;Language&quot;;
+    Write-Host &quot;Language:    &quot; $Language;
+    $IsLowSpeed = Get-Property $Info &quot;IsLowSpeedConnection&quot;;
+    Write-Host &quot;IsLowSpeed:  &quot; $IsLowSpeed;
+  }
+
+}
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Sub GetInfo (File)</title>
+    <language>PowerShell</language>
+    <ui>SAPGUI</ui>
+    <code>
+#-Function GetInfo------------------------------------------------------
+#-
+#- Writes information about the given session in a file
+#-
+#- Example:
+#- GetInfo $session &quot;C:\Dummy\Info.txt&quot;
+#-
+#---------------------------------------------------------------------
+Function GetInfo {
+
+  Param (
+    [System.__ComObject]$session,
+    [String]$FileName
+  )
+
+  $Info = Get-Property $session &quot;Info&quot;;
+  If ($Info -is [System.__ComObject]) {
+    $Transaction = Get-Property $Info &quot;Transaction&quot;;
+    $Text = &quot;Tansaction:   &quot; + $Transaction;
+    $Text | Set-Content $FileName;
+    $Program = Get-Property $Info &quot;Program&quot;;
+    $Text = &quot;Program:      &quot; + $Program;
+    $Text | Add-Content $FileName;
+    $ScreenNumber = Get-Property $Info &quot;ScreenNumber&quot;;
+    $Text = &quot;ScreenNumber: &quot; + $ScreenNumber;
+    $Text | Add-Content $FileName;
+    $CodePage = Get-Property $Info &quot;CodePage&quot;;
+    $Text = &quot;CodePage:     &quot; + $CodePage;
+    $Text | Add-Content $FileName;
+    $GuiCodePage = Get-Property $Info &quot;GuiCodePage&quot;;
+    $Text = &quot;GuiCodePage:  &quot; + $GuiCodePage;
+    $Text | Add-Content $FileName;
+    $I18NMode = Get-Property $Info &quot;I18NMode&quot;;
+    $Text = &quot;I18NMode:     &quot; + $I18NMode;
+    $Text | Add-Content $FileName;
+    $Language = Get-Property $Info &quot;Language&quot;;
+    $Text = &quot;Language:     &quot; + $Language;
+    $Text | Add-Content $FileName;
+    $IsLowSpeed = Get-Property $Info &quot;IsLowSpeedConnection&quot;;
+    $Text = &quot;IsLowSpeed:   &quot; + $IsLowSpeed;
+    $Text | Add-Content $FileName;
+  }
+
+}
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Sub GetInfo</title>
+    <language>WScript</language>
+    <ui>SAPGUI</ui>
+    <code>
+&apos;-Sub GetInfo-----------------------------------------------------------
+&apos;-
+&apos;- Writes information about the given session in a file
+&apos;-
+&apos;- Example:
+&apos;- GetInfo(session, &quot;C:\Dummy\Info.txt&quot;)
+&apos;-
+&apos;-----------------------------------------------------------------------
+Sub GetInfo(session, FileName)
+
+  Dim info, oFSO, oFile
+
+  Set info = session.Info
+
+  Set oFSO=CreateObject(&quot;Scripting.FileSystemObject&quot;)
+  Set oFile = oFSO.CreateTextFile(FileName, True)
+  oFile.Write &quot;Transaction          : &quot; &amp; _
+    Info.Transaction &amp; vbCrLf
+  oFile.Write &quot;Program              : &quot; &amp; _
+  Info.Program &amp; vbCrLf
+  oFile.Write &quot;ScreenNumber         : &quot; &amp; _
+    CStr(Info.ScreenNumber) &amp; vbCrLf
+  oFile.Write &quot;CodePage             : &quot; &amp; _
+    CStr(Info.CodePage) &amp; vbCrLf
+  oFile.Write &quot;GuiCodePage          : &quot; &amp; _
+    CStr(Info.GuiCodePage) &amp; vbCrLf
+  oFile.Write &quot;I18NMode             : &quot; &amp; _
+    CStr(Info.I18NMode) &amp; vbCrLf
+  oFile.Write &quot;Language             : &quot; &amp; _
+    CStr(Info.Language) &amp; vbCrLf
+  oFile.Write &quot;IsLowSpeedConnection : &quot; &amp; _
+    CStr(Info.IsLowSpeedConnection) &amp; vbCrLf
+  oFile.Close
+
+End Sub
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Sub GetInfo</title>
+    <language>AutoIt</language>
+    <ui>SAPGUI</ui>
+    <code>
+;-Includes--------------------------------------------------------------
+  #Include &lt;FileConstants.au3&gt;
+
+;-Sub GetInfo-----------------------------------------------------------
+;-
+;- Writes information about the given session in a file
+;-
+;- Example:
+;- GetInfo($Session, &quot;C:\Dummy\Info.txt&quot;)
+;-
+;-----------------------------------------------------------------------
+Func GetInfo($Session, $FileName)
+
+  Local $Info, $hFile
+
+  $Info = $Session.Info()
+
+  $hFile = FileOpen($FileName, $FO_OVERWRITE)
+  If $hFile = -1 Then
+    Return
+  EndIf
+  FileWriteLine($hFile, &quot;Transaction          : &quot; &amp; _
+    $Info.Transaction())
+  FileWriteLine($hFile, &quot;Program              : &quot; &amp; _
+    $Info.Program())
+  FileWriteLine($hFile, &quot;ScreenNumber         : &quot; &amp; _
+    $Info.ScreenNumber())
+  FileWriteLine($hFile, &quot;CodePage             : &quot; &amp; _
+    $Info.CodePage())
+  FileWriteLine($hFile, &quot;GuiCodePage          : &quot; &amp; _
+    $Info.GuiCodePage())
+  FileWriteLine($hFile, &quot;I18NMode             : &quot; &amp; _
+    $Info.I18NMode())
+  FileWriteLine($hFile, &quot;Language             : &quot; &amp; _
+    $Info.Language())
+  FileWriteLine($hFile, &quot;IsLowSpeedConnection : &quot; &amp; _
+    $Info.IsLowSpeedConnection())
+  FileClose($hFile)
+
+EndFunc
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Start sequence (1)</title>
+    <language>WScript</language>
+    <ui>SAPGUI</ui>
+    <code>
+  OpenNewConnFlag = False
+
+  If Not IsObject(application) Then
+    On Error Resume Next
+    &apos;If the script can&apos;t get the object, it starts saplogon and tries
+    &apos;to get the object again.
+    Set SapGuiAuto  = GetObject(&quot;SAPGUI&quot;)
+    If Err.Number &lt;&gt; 0 Then
+      On Error Goto 0
+      Set WshShell = CreateObject(&quot;WScript.Shell&quot;)
+      Set oExec = WshShell.Exec(_
+        &quot;c:\Program Files (x86)\SAP\FrontEnd\SAPgui\saplogon.exe&quot;)
+      Do While Not wshShell.AppActivate(&quot;SAP Logon 750&quot;) 
+        WScript.Sleep 500 
+      Loop
+      Set SapGuiAuto  = GetObject(&quot;SAPGUI&quot;)
+    Else
+      On Error Goto 0
+    End If
+    Set application = SapGuiAuto.GetScriptingEngine
+  End If
+
+  If Not IsObject(connection) Then
+    On Error Resume Next
+    &apos;If the script can&apos;t open connection 0, it opens a new connection
+    Set connection = application.Children(0)
+    If Err.Number &lt;&gt; 0 Then
+      On Error Goto 0
+      application.OpenConnectionByConnectionString _
+        &quot;/H/10.100.200.100&quot;, True
+      OpenNewConnFlag = True
+    Else
+      On Error Goto 0
+    End If
+    Set connection = application.Children(0)
+  End If
+
+  If Not IsObject(session) Then
+    Set session = connection.Children(0)
+    &apos;If the script opens a new connection, it logon to the system
+    If OpenNewConnFlag = True Then
+      session.findById(&quot;wnd[0]/usr/txtRSYST-MANDT&quot;).text = &quot;001&quot;
+      session.findById(&quot;wnd[0]/usr/txtRSYST-BNAME&quot;).text = &quot;BCUSER&quot;
+      session.findById(&quot;wnd[0]/usr/pwdRSYST-BCODE&quot;).text = &quot;minisap&quot;
+      session.findById(&quot;wnd[0]/usr/txtRSYST-LANGU&quot;).text = &quot;EN&quot;
+      session.findById(&quot;wnd[0]&quot;).sendVKey 0
+    End If
+  End If
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Start sequence (2)</title>
+    <language>WScript</language>
+    <ui>SAPGUI</ui>
+    <code>
+&apos;-Begin-----------------------------------------------------------------
+&apos;-
+&apos;- Call it via command line:
+&apos;- StartSequence.vbs /H/NSP 001 BCUSER minisap
+&apos;-
+&apos;-----------------------------------------------------------------------
+
+&apos;-Directives------------------------------------------------------------
+Option Explicit
+
+&apos;-Sub Main--------------------------------------------------------------
+Sub Main()
+
+  Dim SapguiAuto, WshShell, application, connection, session
+  Dim SAPLogon, oExec, Mandant, ConnString, OpenNewConnFlag, i
+
+  SAPLogon = &quot;C:\Program Files (x86)\SAP\FrontEnd\SAPgui\saplogon.exe&quot;
+  ConnString = WScript.Arguments(0)
+  Mandant = WScript.Arguments(1)
+  OpenNewConnFlag = False
+
+  On Error Resume Next
+  Set SapGuiAuto  = GetObject(&quot;SAPGUI&quot;)
+  If Err.Number &lt;&gt; 0 Then
+    On Error Goto 0
+    Set WshShell = CreateObject(&quot;WScript.Shell&quot;)
+    Set oExec = WshShell.Exec(SAPLogon)
+    Do While Not wshShell.AppActivate(&quot;SAP Logon 750&quot;) 
+      WScript.Sleep 500 
+    Loop
+    Set SapGuiAuto  = GetObject(&quot;SAPGUI&quot;)
+  Else
+    On Error Goto 0
+  End If
+  Set application = SapGuiAuto.GetScriptingEngine
+
+  If Not IsObject(application) Then
+    Exit Sub
+  End If
+
+  For i = 0 To application.Children.Count - 1
+    Set connection = application.Children(CInt(i))
+    If InStr(ConnString, connection.ConnectionString) Then
+      Exit For
+    End If
+    Set connection = Nothing
+  Next
+
+  If TypeName(connection) = &quot;Nothing&quot; Then
+    Set connection = _
+      application.OpenConnectionByConnectionString(ConnString, True)
+    OpenNewConnFlag = True
+  End If
+  
+  If Not IsObject(connection) Then
+    Exit Sub
+  End If
+
+  Set session = connection.Children(0)
+  If OpenNewConnFlag = True Then
+    session.findById(&quot;wnd[0]/usr/txtRSYST-MANDT&quot;).text = Mandant
+    session.findById(&quot;wnd[0]/usr/txtRSYST-BNAME&quot;).text = WScript.Arguments(2)
+    session.findById(&quot;wnd[0]/usr/pwdRSYST-BCODE&quot;).text = WScript.Arguments(3)
+    session.findById(&quot;wnd[0]/usr/txtRSYST-LANGU&quot;).text = &quot;EN&quot;
+    session.findById(&quot;wnd[0]&quot;).sendVKey 0
+  End If
+
+  &apos;&gt;Insert your SAP GUI Scripting code here&lt;
+
+End Sub
+
+&apos;-Main------------------------------------------------------------------
+Main
+
+&apos;-End-------------------------------------------------------------------
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Function FindSession</title>
+    <language>PowerShell</language>
+    <ui>SAPGUI</ui>
+    <code>
+#-Function Find-Session-------------------------------------------------
+Function Find-Session {
+
+  Param(
+    $SID
+  )
+
+  $SapGuiAuto = Get-Object &quot;SAPGUI&quot;;
+  If ($SapGuiAuto -IsNot [System.__ComObject]) {
+    Return;
+  }
+
+  $Application = Invoke-Method $SapGuiAuto &quot;GetScriptingEngine&quot;;
+  If ($Application -IsNot [System.__ComObject]) {
+    Return;
+  }
+
+  $Connections = Get-Property $Application &quot;Connections&quot;;
+  If ($Connections -IsNot [System.__ComObject]) {
+    $cntConnections = $Connections.Count;
+  } Else {
+    $cntConnections = 1;
+  }
+
+  For ($i = 0; $i -lt $cntConnections; $i++) {
+
+    $Connection = Get-Property $Application &quot;Children&quot; @($i);
+    If ($Connection -IsNot [System.__ComObject]) {
+      Return;
+    }
+
+    $Sessions = Get-Property $Connection &quot;Sessions&quot;;
+    If ($Sessions -IsNot [System.__ComObject]) {
+      $cntSessions = $Sessions.Count;
+    } Else {
+      $cntSessions = 1;
+    }
+
+    For ($j = 0; $j -lt $cntSessions; $j++) {
+
+      $Session = Get-Property $Connection &quot;Children&quot; @($j);
+      If ($Session -IsNot [System.__ComObject]) {
+        Return;
+      }
+
+      $Busy = Get-Property $Session &quot;Busy&quot;;
+      If ($Busy -eq $False) {
+
+        $Info = Get-Property $Session &quot;Info&quot;;
+        If ($Info -IsNot [System.__ComObject]) {
+          Return;
+        }
+
+        $SystemName = Get-Property $Info &quot;SystemName&quot;;
+        If ($SystemName -eq $SID) {
+          Return $Session;
+        }
+
+      }
+
+    }
+
+  }
+
+}
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>FindSession (1)</title>
+    <language>WScript</language>
+    <ui>SAPGUI</ui>
+    <code>
+&apos;-Begin-----------------------------------------------------------------
+&apos;-
+&apos;- Example to show how to select a specific session to do SAP GUI
+&apos;- Scripting activities inside it. It scans all connections with all
+&apos;- sessions to find the correct one.
+&apos;-
+&apos;- Author: Stefan Schnell
+&apos;-
+&apos;-----------------------------------------------------------------------
+
+&apos;-Directives------------------------------------------------------------
+  Option Explicit
+
+&apos;-Sub Action------------------------------------------------------------
+&apos;-
+&apos;- Get the selected session and do the action inside it
+&apos;-
+&apos;-----------------------------------------------------------------------
+Sub Action(session)
+
+  &apos;&gt;Insert your SAP GUI Scripting code here&lt;
+
+    MsgBox session.findById(&quot;wnd[0]/titl&quot;).text
+
+End Sub
+
+&apos;-Sub Main--------------------------------------------------------------
+&apos;-
+&apos;- Main procedure to select the session
+&apos;-
+&apos;-----------------------------------------------------------------------
+Sub Main()
+
+  Dim SapAppl, SapGuiAuto, CollCon, i, oCon, CollSes, j, oSes
+  Dim oSesInf, SID, Trans
+
+  Set SapGuiAuto = GetObject(&quot;SAPGUI&quot;)
+  If Not IsObject(SapGuiAuto) Then
+    Exit Sub
+  End If
+
+  Set SapAppl = SapGuiAuto.GetScriptingEngine
+  If Not IsObject(SapAppl) Then
+    Exit Sub
+  End If
+
+  Set CollCon = SapAppl.Connections()
+  If Not IsObject(CollCon) Then
+    Exit Sub
+  End If
+
+  &apos;-Loop over connections-----------------------------------------------
+  For i = 0 To CollCon.Count() - 1
+
+    Set oCon = SapAppl.Children(CLng(i))
+    If Not IsObject(oCon) Then
+      Exit Sub
+    End If
+
+    Set CollSes = oCon.Sessions()
+    If Not IsObject(CollSes) Then
+      Exit Sub
+    End If
+
+    &apos;-Loop over sessions------------------------------------------------
+    For j = 0 To CollSes.Count() - 1
+
+      Set oSes = oCon.Children(CLng(j))
+      If Not IsObject(oSes) Then
+        Exit Sub
+      End If 
+
+      If oSes.Busy() = vbFalse Then
+
+        Set oSesInf = oSes.Info()
+        If IsObject(oSesInf) Then
+
+          &apos;-------------------------------------------------------------
+          &apos;-
+          &apos;- With the session info object is it possible to
+          &apos;- select a specific session which executes the
+          &apos;- activities. In our example it is the system name
+          &apos;- and the transaction code, but you can use all
+          &apos;- properties of the session info object you want.
+          &apos;-
+          &apos;-------------------------------------------------------------
+            SID = oSesInf.SystemName()
+            Trans = oSesInf.Transaction()
+
+            If SID = &quot;NSP&quot; And Trans = &quot;SE80&quot;  Then
+
+              Action oSes
+
+            End If
+
+        End If
+
+      End If
+
+    Next
+
+  Next
+
+End Sub
+
+&apos;-Main------------------------------------------------------------------
+Main()
+
+&apos;-End-------------------------------------------------------------------
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>FindSession (2)</title>
+    <language>WScript</language>
+    <ui>SAPGUI</ui>
+    <code>
+&apos;-Begin-----------------------------------------------------------------
+&apos;-
+&apos;- Example to show how to select a specific session to do SAP GUI
+&apos;- Scripting activities inside it. It scans all connections with all
+&apos;- sessions to find the correct one based on system ID (SID) and
+&apos;- transaction code (TAC).
+&apos;-
+&apos;-----------------------------------------------------------------------
+
+&apos;-Directives------------------------------------------------------------
+Option Explicit
+
+&apos;-Function FindSession--------------------------------------------------
+&apos;-
+&apos;- Find a specific SAP GUI session
+&apos;-
+&apos;-----------------------------------------------------------------------
+Function FindSession(SID, TAC)
+
+  Dim SapAppl, SapGuiAuto, CollCon, i, oCon, CollSes, j, oSes
+  Dim oSesInf
+
+  Set SapGuiAuto = GetObject(&quot;SAPGUI&quot;)
+  If Not IsObject(SapGuiAuto) Then
+    Exit Function
+  End If
+
+  Set SapAppl = SapGuiAuto.GetScriptingEngine
+  If Not IsObject(SapAppl) Then
+    Exit Function
+  End If
+
+  Set CollCon = SapAppl.Connections()
+  If Not IsObject(CollCon) Then
+    Exit Function
+  End If
+ 
+  &apos;-Loop over connections-----------------------------------------------
+  For i = 0 To CollCon.Count() - 1
+
+    Set oCon = SapAppl.Children(CLng(i))
+    If Not IsObject(oCon) Then
+      Exit Function
+    End If 
+
+    Set CollSes = oCon.Sessions()
+    If Not IsObject(CollSes) Then
+      Exit Function
+    End If 
+  
+    &apos;-Loop over sessions------------------------------------------------
+    For j = 0 To CollSes.Count() - 1
+  
+      Set oSes = oCon.Children(CLng(j))
+      If Not IsObject(oSes) Then
+        Exit Function
+      End If 
+
+      If oSes.Busy() = vbFalse Then
+        Set oSesInf = oSes.Info()
+        If IsObject(oSesInf) Then
+          If oSesInf.SystemName() = SID And _
+            oSesInf.Transaction() = TAC  Then
+            Set FindSession = oSes
+            Exit Function
+          End If
+        End If
+      End If
+
+    Next
+
+  Next
+
+  Set FindSession = Nothing
+
+End Function
+
+&apos;-Sub Main--------------------------------------------------------------
+Sub Main()
+
+  Dim oSes
+
+  Set oSes = FindSession(&quot;NSP&quot;, &quot;SE80&quot;)
+
+  If TypeName(oSes) &lt;&gt; &quot;Nothing&quot; Then
+
+    &apos;&gt;Insert your SAP GUI Scripting code here&lt;
+    MsgBox oSes.findById(&quot;wnd[0]/titl&quot;).text
+
+  End If
+
+End Sub
+
+&apos;-Main------------------------------------------------------------------
+Main()
+
+&apos;-End-------------------------------------------------------------------
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>ScriptingCtrl with OpenConnection</title>
+    <language>WScript</language>
+    <ui>SAPGUI</ui>
+    <code>
+&apos;-Begin-----------------------------------------------------------------
+
+&apos;-Directives------------------------------------------------------------
+Option Explicit
+
+&apos;-Sub Main--------------------------------------------------------------
+Sub Main()
+
+  Dim Application &apos;As GuiApplication
+  Dim Connection  &apos;As GuiConnection
+
+  Set Application = CreateObject(&quot;Sapgui.ScriptingCtrl.1&quot;)
+  If Not IsObject(Application) Then
+    Exit Sub
+  End If
+
+  &apos;Set Connection = Application.OpenConnection(&quot;NSP&quot;, True)
+  Set Connection = Application.OpenConnectionByConnectionString(_
+    &quot;/H/10.100.200.100&quot;, True)
+  If Not IsObject(Connection) Then
+    Exit Sub
+  End If
+
+
+
+  Connection.CloseConnection()
+
+End Sub
+
+&apos;-Main------------------------------------------------------------------
+Main
+
+&apos;-End-------------------------------------------------------------------
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>ScriptingCtrl Replacement</title>
+    <language>WScript</language>
+    <ui>SAPGUI</ui>
+    <code>
+&apos;-Begin-----------------------------------------------------------------
+
+&apos;-Directives------------------------------------------------------------
+Option Explicit
+
+Dim SAPLogon, SAPLogonTitle
+SAPLogon = &quot;saplogon.exe&quot; : SAPLogonTitle = &quot;SAP Logon 750&quot;
+&apos;SAPLogon = &quot;saplgpad.exe&quot; : SAPLogonTitle = &quot;SAP Logon Pad 750&quot;
+Dim SysDescr, SysIP
+SysDescr = &quot;NSP&quot; : SysIP = &quot;192.168.203.134&quot;
+
+&apos;-Function FindProcess--------------------------------------------------
+Function FindProcess(ProcessName)
+
+  Dim WMIServ, Processes, Process
+
+  FindProcess = False
+
+  Set WMIServ = GetObject(&quot;winmgmts:{impersonationLevel=&quot; &amp; _
+    &quot;impersonate}!\\.\root\cimv2&quot;) 
+
+  Set Processes = WMIServ.ExecQuery(&quot;Select * from Win32_Process &quot; &amp; _
+    &quot;Where Name = &apos;&quot; &amp; ProcessName &amp; &quot;&apos;&quot;)
+
+  For Each Process In Processes
+    FindProcess = True
+    Exit Function
+  Next
+
+End Function
+
+&apos;-Sub TerminateProcess--------------------------------------------------
+Sub TerminateProcess(ProcessName)
+
+  Dim WMIServ, Processes, Process
+
+  Set WMIServ = GetObject(&quot;winmgmts:{impersonationLevel=&quot; &amp; _
+    &quot;impersonate}!\\.\root\cimv2&quot;) 
+
+  Set Processes = WMIServ.ExecQuery(&quot;Select * from Win32_Process &quot; &amp; _
+    &quot;Where Name = &apos;&quot; &amp; ProcessName &amp; &quot;&apos;&quot;)
+
+  For Each Process In Processes
+    Process.Terminate()
+    Exit Sub
+  Next
+
+End Sub
+
+&apos;-Function GetSAPGUIObject----------------------------------------------
+Function GetSAPGUIObject()
+
+    Dim WshShell, Exec
+
+    If FindProcess(SAPLogon) Then
+      Set GetSAPGUIObject = GetObject(&quot;SAPGUI&quot;)
+    Else
+      Set WshShell = CreateObject(&quot;WScript.Shell&quot;)
+      Set Exec = WshShell.Exec(_
+        &quot;c:\Program Files (x86)\SAP\FrontEnd\SAPgui\&quot; &amp; SAPLogon)
+      Do While Not WshShell.AppActivate(SAPLogonTitle) 
+        WScript.Sleep 500 
+      Loop
+      Set GetSAPGUIObject = GetObject(&quot;SAPGUI&quot;)
+    End If
+
+  End Function
+
+&apos;-Sub Main--------------------------------------------------------------
+Sub Main()
+
+  Dim SapGuiAuto, Application, Connection, Session
+
+  Set SapGuiAuto = GetSAPGUIObject()
+  If Not IsObject(SapGuiAuto) Then
+    Exit Sub
+  End If
+
+  Set Application = SapGuiAuto.GetScriptingEngine
+  If Not IsObject(Application) Then
+    Set SapGuiAuto = Nothing
+    Exit Sub
+  End If
+
+  Set Connection = Application.OpenConnection(SysDescr, True)
+  &apos;Set Connection = Application.OpenConnectionByConnectionString(_
+  &apos;  &quot;/H/&quot; &amp; SysIP, True)
+  If Not IsObject(Connection) Then
+    Set Application = Nothing
+    Set SapGuiAuto = Nothing
+    Exit Sub
+  End If
+
+  Set Session = Connection.Children(0)
+  If Not IsObject(Session) Then
+    Set Connection = Nothing
+    Set Application = Nothing
+    Set SapGuiAuto = Nothing
+    Exit Sub
+  End If
+
+  MyScript(Session)
+
+  Set Session = Nothing
+  Set Connection = Nothing
+  Set Application = Nothing
+  Set SapGuiAuto = Nothing
+  TerminateProcess SAPLogon
+
+End Sub
+
+&apos;-Sub MyScript----------------------------------------------------------
+Sub MyScript(Session)
+
+
+
+End Sub
+
+&apos;-Main------------------------------------------------------------------
+Main
+
+&apos;-End-------------------------------------------------------------------
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>ScriptingCtrl replacement</title>
+    <language>AutoIt</language>
+    <ui>SAPGUI</ui>
+    <code>
+;-Begin-----------------------------------------------------------------
+
+;-Directives------------------------------------------------------------
+AutoItSetOption(&quot;MustDeclareVars&quot;, 1)
+
+Global $SAPLogon, $SAPLogonTitle
+$SAPLogon = &quot;saplogon.exe&quot;
+$SAPLogonTitle = &quot;SAP Logon 750&quot;
+;$SAPLogon = &quot;saplgpad.exe&quot;
+;$SAPLogonTitle = &quot;SAP Logon Pad 750&quot;
+Global $SysDescr, $SysIP
+$SysDescr = &quot;NSP&quot;
+$SysIP = &quot;192.168.203.134&quot;
+
+;-Function GetSAPGUIObject----------------------------------------------
+Func GetSAPGUIObject()
+
+  If ProcessExists($SAPLogon) Then
+    Return ObjGet(&quot;SAPGUI&quot;)
+  Else
+    Run(&quot;c:\Program Files (x86)\SAP\FrontEnd\SAPgui\&quot; &amp; $SAPLogon)
+    WinWait($SAPLogonTitle, &quot;&quot;, 30)
+    Return ObjGet(&quot;SAPGUI&quot;)
+  EndIf
+
+EndFunc
+
+;-Sub Main--------------------------------------------------------------
+Func Main()
+
+  Local $SapGuiAuto, $Application, $Connection, $Session
+
+  $SapGuiAuto = GetSAPGUIObject()
+  If Not IsObj($SapGuiAuto) Then
+    Return
+  EndIf
+
+  $Application = $SapGuiAuto.GetScriptingEngine()
+  If Not IsObj($Application) Then
+    $SapGuiAuto = 0
+    Return
+  EndIf
+
+  $Connection = $Application.OpenConnection($SysDescr, True)
+  ;$Connection = $Application.OpenConnectionByConnectionString( _
+  ;  &quot;/H/&quot; &amp; $SysIP, True)
+  If Not IsObj($Connection) Then
+    $Application = 0
+    $SapGuiAuto = 0
+    Return
+  EndIf
+
+  $Session = $Connection.Children(0)
+  If Not IsObj($Session) Then
+    $Connection = 0
+    $Application = 0
+    $SapGuiAuto = 0
+    Return
+  EndIf
+
+  MyScript($Session)
+
+  $Session = 0
+  $Connection = 0
+  $Application = 0
+  $SapGuiAuto = 0
+  ProcessClose($SAPLogon)
+
+EndFunc
+
+;-Sub MyScript----------------------------------------------------------
+Func MyScript($Session)
+
+
+
+EndFunc
+
+;-Main------------------------------------------------------------------
+Main()
+
+;-End-------------------------------------------------------------------
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>GetStatusBarText</title>
+    <language>PowerShell</language>
+    <ui>SAPGUI</ui>
+    <code>
+$ID = Invoke-Method $Session &quot;findById&quot; @(&quot;wnd[0]/sbar/pane[0]&quot;);
+$StatusBar = Get-Property $ID &quot;text&quot;;
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>GetSAPGUIVersion (1)</title>
+    <language>PowerShell</language>
+    <ui>SAPGUI</ui>
+    <code>
+#-Function GetSAPGUIVersion---------------------------------------------
+Function GetSAPGUIVersion {
+
+  Param(
+    [Parameter(Mandatory = $true)][Ref]$MajorVersion,
+    [Parameter(Mandatory = $true)][Ref]$MinorVersion,
+    [Parameter(Mandatory = $true)][Ref]$PatchLevel
+  )
+
+  $SapGuiAuto = Get-Object -class &quot;SAPGUI&quot;;
+  If ($SapGuiAuto -isnot [__ComObject]) {
+    Return;
+  }
+
+  $application = Invoke-Method -object $SapGuiAuto -methodName &quot;GetScriptingEngine&quot;;
+  If ($application -isnot [__ComObject]) {
+    Free-Object -object $SapGuiAuto$;
+    Return;
+  }
+
+  $MajorVersion.Value = $application.MajorVersion();
+  $MinorVersion.Value = $application.MinorVersion();
+  $PatchLevel.Value = $application.PatchLevel();
+
+  Free-Object $SapGuiAuto;
+
+}
+
+#-Call function example-------------------------------------------------
+[String]$MajorVersion = $Null;
+[String]$MinorVersion = $Null;
+[String]$PatchLevel = $Null;
+
+GetSAPGUIVersion -MajorVersion ([Ref]$MajorVersion) `
+  -MinorVersion ([Ref]$MinorVersion) -PatchLevel ([Ref]$PatchLevel);
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>GetSAPGUIVersion (2)</title>
+    <language>PowerShell</language>
+    <ui>SAPGUI</ui>
+    <code>
+#-Function GetSAPGUIVersion---------------------------------------------
+Function GetSAPGUIVersion {
+
+  Param(
+    [Parameter(Mandatory = $true)][Ref]$MajorVersion,
+    [Parameter(Mandatory = $true)][Ref]$MinorVersion,
+    [Parameter(Mandatory = $true)][Ref]$PatchLevel
+  )
+
+  $ProcNames = @(&quot;saplogon&quot;;&quot;saplgpad&quot;;);
+  $Proc = Get-Process -Name $ProcNames -ErrorAction SilentlyContinue;
+  $Ver = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($Proc.Path).FileVersion;
+  $MajorVersion.Value = $Ver.Split(&quot;.&quot;)[0];
+  $MinorVersion.Value = $Ver.Split(&quot;.&quot;)[1];
+  $PatchLevel.Value = $Ver.Split(&quot;.&quot;)[2];
+
+}
+
+#-Call function example-------------------------------------------------
+[String]$MajorVersion = $Null;
+[String]$MinorVersion = $Null;
+[String]$PatchLevel = $Null;
+
+GetSAPGUIVersion -MajorVersion ([Ref]$MajorVersion) `
+  -MinorVersion ([Ref]$MinorVersion) -PatchLevel ([Ref]$PatchLevel);
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Trap</title>
+    <language>PowerShell</language>
+    <ui>SAPGUI</ui>
+    <code>
+#-Error routine---------------------------------------------------------
+Trap {
+  Free-Object $session;
+  Free-Object $connection;
+  Free-Object $application;
+  Free-Object $SapGuiAuto;
+  Add-Type -AssemblyName &quot;System.Windows.Forms&quot;;
+  [Void][System.Windows.Forms.MessageBox]::Show( `
+    $_.Exception.GetType().FullName + `
+    [System.Environment]::NewLine + `
+    &quot;Error at line &quot; + $_.InvocationInfo.ScriptLineNumber + `
+    &quot; in &quot; + $_.InvocationInfo.ScriptName + `
+    [System.Environment]::NewLine + [System.Environment]::NewLine + `
+    $_.Exception.Message, &quot;An Error Occurred&quot;, 0);
+  Exit;
+}
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>$Wait.Until</title>
+    <language>PowerShell</language>
+    <ui>Web</ui>
+    <code>
+[void]$Wait.Until([OpenQA.Selenium.Support.UI.ExpectedConditions]::ElementIsVisible([OpenQA.Selenium.By]::Id(&quot;id&quot;)));
+[void]$Wait.Until([OpenQA.Selenium.Support.UI.ExpectedConditions]::ElementExists([OpenQA.Selenium.By]::Id(&quot;id&quot;)));
+[void]$Wait.Until([OpenQA.Selenium.Support.UI.ExpectedConditions]::ElementToBeClickable([OpenQA.Selenium.By]::Id(&quot;id&quot;)));
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Sub LoadSelenium</title>
+    <language>PowerShell</language>
+    <ui>Web</ui>
+    <code>
+#-Sub LoadSelenium------------------------------------------------------
+Function LoadSelenium {
+  $Libraries = @(
+    &quot;Selenium.WebDriverBackedSelenium.dll&quot;,
+    &quot;WebDriver.dll&quot;,
+    &quot;WebDriver.Support.dll&quot;
+  );
+  $script:SeleniumPath = &quot;C:\Program Files (x86)\Selenium&quot;;
+  ForEach($Library In $Libraries) {
+    Add-Type -Path &quot;$script:SeleniumPath\$Library&quot;;
+  }
+}
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Sub LoadAppium</title>
+    <language>PowerShell</language>
+    <ui>Mobile</ui>
+    <code>
+#-Sub LoadAppium--------------------------------------------------------
+Function LoadAppium {
+  $Libraries = @(
+    &quot;appium-dotnet-driver.dll&quot;,
+    &quot;Castle.Core.dll&quot;,
+    &quot;Newtonsoft.Json.dll&quot;,
+    &quot;WebDriver.dll&quot;,
+    &quot;WebDriver.Support.dll&quot;
+  );
+  $script:AppiumPath = &quot;C:\Program Files (x86)\Appium&quot;;
+  ForEach($Library In $Libraries) {
+    Add-Type -Path &quot;$script:AppiumPath\$Library&quot;;
+  }
+}
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Sub WaitUntilComplete</title>
+    <language>PowerShell</language>
+    <ui>Web</ui>
+    <code>
+#-Sub WaitUntilComplete-------------------------------------------------
+Function WaitUntilComplete {
+  Do {
+    Start-Sleep -Milliseconds 250;
+  } Until ($script:driver.ExecuteScript(&quot;return document.readyState;&quot;) -eq &quot;complete&quot;);
+  Start-Sleep -Milliseconds 1000;
+}
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Sub OpenChrome</title>
+    <language>PowerShell</language>
+    <ui>Web</ui>
+    <code>
+#-Sub OpenChrome--------------------------------------------------------
+Function OpenChrome {
+
+  Param(
+    [String]$Url
+  )
+
+  $Browser = (Get-ItemProperty -Literalpath `
+    &quot;Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe&quot;).&apos;(default)&apos;;
+  $Options = New-Object OpenQA.Selenium.Chrome.ChromeOptions;
+  $Options.BinaryLocation = &quot;$Browser&quot;;
+  $Options.AddArguments(&quot;--window-size=1440,900&quot;,&quot;--no-default-browser-check&quot;,&quot;--disable-infobars&quot;);
+  $script:driver = New-Object OpenQA.Selenium.Chrome.ChromeDriver($script:SeleniumPath, $Options);
+  If($Null -eq $script:driver.SessionId) {
+    Exit;
+  }
+  $script:driver.Navigate().GoToUrl($Url);
+  WaitUntilComplete;
+}
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Sub OpenChrome (Mobile Emulation)</title>
+    <language>PowerShell</language>
+    <ui>Web</ui>
+    <code>
+#-Sub OpenChrome--------------------------------------------------------
+Function OpenChrome {
+
+  Param(
+    [String]$Url
+  )
+
+  $Browser = (Get-ItemProperty -Literalpath `
+    &quot;Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe&quot;).&apos;(default)&apos;;
+  $Options = New-Object OpenQA.Selenium.Chrome.ChromeOptions;
+  $Options.BinaryLocation = &quot;$Browser&quot;;
+  $Options.AddArguments(&quot;--no-default-browser-check&quot;,&quot;--disable-infobars&quot;);
+  #-Samsung Galaxy (360 x 640)------------------------------------------
+#  $Options.AddArgument(&quot;--window-size=380,740&quot;);
+#  $Options.EnableMobileEmulation(&quot;Galaxy S5&quot;);
+  #-iPhone (375 x 667)--------------------------------------------------
+#  $Options.AddArgument(&quot;--window-size=395,767&quot;);
+#  $Options.EnableMobileEmulation(&quot;iPhone 6/7/8&quot;);
+  #-iPad (768 x 1024)---------------------------------------------------
+  $Options.AddArgument(&quot;--window-size=788,1124&quot;);
+  $Options.EnableMobileEmulation(&quot;iPad&quot;);
+  $script:driver = New-Object OpenQA.Selenium.Chrome.ChromeDriver($script:SeleniumPath, $Options);
+  If($Null -eq $script:driver.SessionId) {
+    Exit;
+  }
+  $script:driver.Navigate().GoToUrl($Url);
+  WaitUntilComplete;
+}
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Sub OpenEdge</title>
+    <language>PowerShell</language>
+    <ui>Web</ui>
+    <code>
+#-Sub OpenEdge----------------------------------------------------------
+Function OpenEdge {
+
+  Param(
+    [String]$Url
+  )
+
+  $Options = New-Object OpenQA.Selenium.Edge.EdgeOptions;
+  $Options.PageLoadStrategy = [OpenQA.Selenium.Edge.EdgePageLoadStrategy]::Eager;
+  $script:driver = New-Object OpenQA.Selenium.Edge.EdgeDriver($script:SeleniumPath, $Options);
+  If($Null -eq $script:driver.SessionId) {
+    Exit;
+  }
+  [System.Drawing.Size]$WinSize = [System.Drawing.Size]::new(1440, 900);
+  $script:driver.Manage().Window.Size = $WinSize;
+  $script:driver.Navigate().GoToUrl($Url);
+  WaitUntilComplete;
+  $script:driver.ExecuteScript(&quot;document.body.style.zoom=&apos;100%&apos;;&quot;);
+  WaitUntilComplete;
+}
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Sub OpenFireFox</title>
+    <language>PowerShell</language>
+    <ui>Web</ui>
+    <code>
+#-Sub OpenFireFox-------------------------------------------------------
+Function OpenFireFox {
+
+  Param(
+    [String]$Url
+  )
+
+  $Browser = (Get-ItemProperty -Literalpath `
+    &quot;Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\firefox.exe&quot;).&apos;(default)&apos;;
+  $BrowserPath = (Get-ItemProperty -Literalpath `
+    &quot;Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\firefox.exe&quot;).&apos;Path&apos;;
+  $Path = [System.Environment]::GetEnvironmentVariable(&quot;PATH&quot;);
+  If($Path -notmatch $BrowserPath.Replace(&quot;\&quot;, &quot;\\&quot;)) {
+    $Path = $Path + $BrowserPath;
+    [System.Environment]::SetEnvironmentVariable(&quot;PATH&quot;, `
+      &quot;$Path&quot;, [System.EnvironmentVariableTarget]::Process);
+  }
+  $Service = [OpenQA.Selenium.Firefox.FirefoxDriverService]::CreateDefaultService( `
+    $script:SeleniumPath, &quot;geckodriver.exe&quot;);
+  $Service.FirefoxBinaryPath = $Browser;
+  $script:driver = New-Object OpenQA.Selenium.Firefox.FirefoxDriver($Service);
+  If($Null -eq $script:driver.SessionId) {
+    Exit;
+  }
+  [System.Drawing.Size]$WinSize = [System.Drawing.Size]::new(1440, 900);
+  $script:driver.Manage().Window.Size = $WinSize;
+  $script:driver.Navigate().GoToUrl($Url);
+  WaitUntilComplete;
+}
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Sub OpenIE (Internet Explorer)</title>
+    <language>PowerShell</language>
+    <ui>Web</ui>
+    <code>
+#-Sub OpenIE------------------------------------------------------------
+Function OpenIE {
+
+  Param(
+    [String]$Url
+  )
+
+  $Options = New-Object OpenQA.Selenium.IE.InternetExplorerOptions;
+  $Options.IgnoreZoomLevel = $True;
+  $Options.IntroduceInstabilityByIgnoringProtectedModeSettings = $True;
+
+  $script:driver = New-Object OpenQA.Selenium.IE.InternetExplorerDriver($script:SeleniumPath, $Options);
+
+  [System.Drawing.Size]$WinSize = [System.Drawing.Size]::new(1440, 900);
+  $script:driver.Manage().Window.Size = $WinSize;
+  $script:driver.Navigate().GoToUrl($Url);
+  WaitUntilComplete;
+}
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Sub ScrollIntoView</title>
+    <language>PowerShell</language>
+    <ui>Web</ui>
+    <code>
+#-Sub ScrollIntoView----------------------------------------------------
+Function ScrollIntoview {
+
+  Param(
+    $webElement
+  )
+
+  $script:driver.ExecuteScript(&quot;arguments[0].scrollIntoView();&quot;, $webElement);
+  WaitUntilComplete;
+
+}
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Function IsRABAXError</title>
+    <language>PowerShell</language>
+    <ui>Web</ui>
+    <code>
+#-IsRABAXError----------------------------------------------------------
+Function IsRABAXError {
+  Try {
+    If ($Null -eq $script:driver.FindElementByXpath(&quot;//*[contains(text(), &apos;RABAX occurred on server side&apos;)]&quot;).Size) {
+      Write-Host &quot;Failed&quot;;
+      Write-Host $script:driver.FindElementByXpath(&quot;//*[contains(text(), &apos;RABAX occurred on server side&apos;)]&quot;).Text;
+      Write-Host &quot;Please use ST22 for further error analysis&quot;;
+      $script:driver.Close();
+      $script:driver.Quit();
+      Return $True;
+    }
+  } Catch {
+    Return $False;
+  }
+}
+
+If (IsRABAXError) { Return }
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Trap</title>
+    <language>PowerShell</language>
+    <ui>Web</ui>
+    <code>
+#-Error Routine---------------------------------------------------------
+Trap {
+
+  $date = Get-Date -Format &quot;yyyMMdd&quot;;
+  $time = Get-Date -Format &quot;HHmmssfff&quot;;
+  $FolderPath = &quot;$($env:USERPROFILE)\Desktop\Errors&quot;;
+  If(!(Test-Path -Path $FolderPath)) {
+    New-Item -ItemType Directory -Path $FolderPath &gt; $Null;
+  }
+
+  If($Null -ne $script:driver.SessionId) {
+    Try {
+      $ScreenShot = $script:driver.GetScreenshot();
+      $ScreenShot.SaveAsFile(&quot;$($FolderPath)\$($date)_$($time).jpg&quot;, `
+        [OpenQA.Selenium.ScreenshotImageFormat]::Jpeg);
+    } Catch { }
+    $script:driver.Close();
+    $script:driver.Quit();
+  }
+
+  $ErrorText = &quot;Error &quot; + $_.Exception.GetType().FullName  + `
+    &quot; in line &quot; + $_.InvocationInfo.ScriptLineNumber + `
+    &quot;`r`n&quot; + $_.Exception.Message;
+
+  Set-Content -Path &quot;$($FolderPath)\$($date)_$($time).txt&quot; `
+    -Value $ErrorText &gt; $Null;
+
+  Write-Host &quot;Failed&quot;;
+  Write-Host $ErrorText
+
+  Exit;
+
+}
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Trap</title>
+    <language>PowerShell</language>
+    <ui>Mobile</ui>
+    <code>
+#-Error Routine---------------------------------------------------------
+Trap {
+  $script:driver.CloseApp();
+  $script:driver.Quit();
+  Write-Host &quot;Failed&quot;;
+  Write-Host &quot;Error&quot; $_.Exception.GetType().FullName `
+    &quot;in line&quot; $_.InvocationInfo.ScriptLineNumber `
+    `r`n $_.Exception.Message;
+  Exit;
+}
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>ReadFile</title>
+    <language>WScript</language>
+    <ui>All</ui>
+    <code>
+  Const ForReading = 1
+  FileName = &quot;C:\Test.txt&quot;
+  Set FSO = CreateObject(&quot;Scripting.FileSystemObject&quot;)
+  Set oFile = FSO.OpenTextFile(FileName, ForReading)
+  FileContent = oFile.ReadAll
+  oFile.Close
+  Set FSO = Nothing
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>dotNETRunner</title>
+    <language>WScript</language>
+    <ui>All</ui>
+    <code>
+VBCode = _
+&quot;Namespace Foo&quot;                                              &amp; vbCrLf &amp; _
+&quot;  Public Class Bar&quot;                                         &amp; vbCrLf &amp; _
+&quot;    Public Function SayHelloFunc(Name As String) As String&quot; &amp; vbCrLf &amp; _
+&quot;      SayHelloFunc = &quot;&quot;Hello &quot;&quot; &amp; Name&quot;                     &amp; vbCrLf &amp; _
+&quot;    End Function&quot;                                           &amp; vbCrLf &amp; _
+&quot;  End Class&quot;                                                &amp; vbCrLf &amp; _
+&quot;End Namespace&quot;
+
+  On Error Resume Next
+  Set dotNETRunner = CreateObject(&quot;dotNET.Runner&quot;)
+  On Error Goto 0
+  If Not IsObject(dotNETRunner) Then
+    MsgBox &quot;Can't create dotNET.Runner&quot;, vbOkOnly, &quot;Error&quot;
+    WScript.Quit
+  End If
+
+  Result = dotNETRunner.CompCode(&quot;VB&quot;, VBCode)
+  If Result &lt;&gt; &quot;&quot; Then
+    MsgBox Result, vbOkOnly, &quot;Error&quot;
+    WScript.Quit
+  End If
+
+  &apos;FileName = &quot;YourCode.vb&quot;
+  &apos;Result = dotNETRunner.CompileFile(&quot;VB&quot;, FileName)
+  &apos;If Result &lt;&gt; &quot;&quot; Then
+  &apos;  MsgBox Result, vbOkOnly, &quot;Error&quot;
+  &apos;  WScript.Quit
+  &apos;End If
+
+  Result = dotNETRunner.run(&quot;Foo.Bar&quot;, &quot;&quot;, &quot;SayHelloFunc&quot;, &quot;Stefan&quot;)
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>ReadFile</title>
+    <language>AutoIt</language>
+    <ui>All</ui>
+    <code>
+  $FileName = &quot;C:\Test.txt&quot;
+  $hFile = FileOpen($FileName)
+  If $hFile = -1 Then
+    MsgBox(0, &quot;Error&quot;, &quot;FileOpen&quot;)
+    Exit
+  EndIf
+  $FileContent = FileRead($hFile)
+  If @error Then
+    MsgBox(0, &quot;Error&quot;, &quot;FileRead&quot;)
+    Exit
+  EndIf
+  FileClose($hFile)
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>dotNETRunner</title>
+    <language>AutoIt</language>
+    <ui>All</ui>
+    <code>
+$CSCode = _
+&quot;namespace Foo {&quot;                               &amp; @CrLf &amp; _
+&quot;  public class Bar {&quot;                          &amp; @CrLf &amp; _
+&quot;    public string SayHelloFunc(string Name) {&quot; &amp; @CrLf &amp; _
+&apos;      return &quot;Hello &quot; + Name;&apos;                 &amp; @CrLf &amp; _
+&quot;    }&quot;                                         &amp; @CrLf &amp; _
+&quot;  }&quot;                                           &amp; @CrLf &amp; _
+&quot;}&quot;
+
+  $dotNETRunner = ObjCreate(&quot;dotNET.Runner&quot;)
+  If @error Or Not IsObj($dotNETRunner) Then
+    MsgBox(0, &quot;Error&quot;, &quot;Can not create dotNET.Runner&quot;)
+    Exit
+  EndIf
+
+  $Result = $dotNETRunner.CompCode("CS", $CSCode)
+  If $Result &lt;&gt; &quot;&quot; Then
+    MsgBox(0, &quot;Error&quot;, $Result)
+    Exit
+  EndIf
+
+  ;$FileName = "YourCode.cs"
+  ;$Result = $dotNETRunner.CompileFile("CS", $FileName)
+  ;If $Result &lt;&gt; &quot;&quot; Then
+  ;  MsgBox(0, &quot;Error&quot;, $Result)
+  ;  Exit
+  ;EndIf
+
+  $Result = $dotNETRunner.run(&quot;Foo.Bar&quot;, &quot;&quot;, &quot;SayHelloFunc&quot;, &quot;Stefan&quot;)
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>ReadFile</title>
+    <language>PowerShell</language>
+    <ui>All</ui>
+    <code>
+  $FileName = &quot;C:\Test.txt&quot;;
+  $FileContent = Get-Content -Path &quot;$($FileName)&quot; -Raw;
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>ReadFile</title>
+    <language>Python</language>
+    <ui>All</ui>
+    <code>
+    FileName = &quot;C:\Test.txt&quot;
+    File = open(FileName, &quot;r&quot;)
+    FileContent = File.read()
+    File.close()
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>dotNETRunner</title>
+    <language>Python</language>
+    <ui>All</ui>
+    <code>
+#import sys, win32com.client
+
+    JSCode = \
+    &quot;package Foo {&quot;                     + \
+    &quot;  class Bar {&quot;                     + \
+    &quot;    function SayHelloFunc(Name) {&quot; + \
+    &quot;      var ret = \"Hello \";&quot;       + \
+    &quot;      return ret.concat(Name);&quot;    + \
+    &quot;    }&quot;                             + \
+    &quot;  }&quot;                               + \
+    &quot;}&quot;
+
+    dotNETRunner = win32com.client.Dispatch(&quot;dotNET.Runner&quot;)
+    if not type(dotNETRunner) == win32com.client.CDispatch:
+      quit()
+
+    result = dotNETRunner.CompCode(&quot;JS&quot;, JSCode)
+    if result:
+      print(result)
+      quit()
+
+    result = dotNETRunner.run(&quot;Foo.Bar&quot;, &quot;SayHelloFunc&quot;, &quot;Stefan&quot;)
+</code>
+  </snippet>
+
+
+  <snippet>
+    <title>Main</title>
+    <language>VBNet</language>
+    <ui>SAPGUI</ui>
+    <code>
+&apos;-Begin-----------------------------------------------------------------
+
+Imports System
+Imports Microsoft.VisualBasic
+
+Public Module SAPGUIScripting
+
+  Sub Main()
+
+    Dim SapGuiAuto As Object
+    Dim app As Object
+    Dim connection As Object
+    Dim session As Object
+
+    Dim connectionNumber As Integer = 0
+    Dim sessionNumber As Integer = 0
+
+    Try
+      SapGuiAuto = GetObject(&quot;SAPGUI&quot;)
+      app = SapGuiAuto.GetScriptingEngine
+      app.HistoryEnabled = False
+      connection = app.Children(CInt(connectionNumber))
+      If connection.DisabledByServer = True Then Exit Sub
+      session = connection.Children(CInt(sessionNumber))
+      If session.Busy = True Then Exit Sub
+      If session.Info.IsLowSpeedConnection = True Then Exit Sub
+    Catch
+      Exit Sub
+    End Try
+
+    &apos;&gt;Insert your SAP GUI Scripting code here&lt;
+
+    app.HistoryEnabled = True
+
+  End Sub
+
+End Module
+
+&apos;-End-------------------------------------------------------------------
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Wait until keypressed</title>
+    <language>VBNet</language>
+    <ui>All</ui>
+    <code>
+Console.ReadKey()
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Main</title>
+    <language>CSharp</language>
+    <ui>SAPGUI</ui>
+    <code>
+//-Begin----------------------------------------------------------------
+
+using System;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using Microsoft.VisualBasic;
+
+public class SAPGUIScripting {
+
+  public static dynamic InvokeMethod(object obj, string methodName, object[] methodParams = null) {
+    return obj.GetType().InvokeMember(methodName, BindingFlags.InvokeMethod, null, obj, methodParams);
+  }
+
+  public static dynamic GetProperty(object obj, string propertyName, object[] propertyParams = null) {
+    return obj.GetType().InvokeMember(propertyName, BindingFlags.GetProperty, null, obj, propertyParams);
+  }
+
+  public static dynamic SetProperty(object obj, string propertyName, object[] propertyParams = null) {
+    return obj.GetType().InvokeMember(propertyName, BindingFlags.SetProperty, null, obj, propertyParams);
+  }
+
+  public static void FreeObject(object obj) {
+    Marshal.ReleaseComObject(obj);
+  }
+
+  public static void Main() {
+
+    object SapGuiAuto = null;
+    object app = null;
+    object connection = null;
+    object session = null;
+
+    int connectionNumber = 0;
+    int sessionNumber = 0;
+
+    try {
+      SapGuiAuto = Interaction.GetObject(&quot;SAPGUI&quot;);
+      app = InvokeMethod(SapGuiAuto, &quot;GetScriptingEngine&quot;);
+      SetProperty(app, "HistoryEnabled", new object[1]{false});
+      connection = GetProperty(app, &quot;Children&quot;, new object[1]{connectionNumber});
+      if(GetProperty(connection, &quot;DisabledByServer&quot;) == true) { return; }
+      session = GetProperty(connection, &quot;Children&quot;, new object[1]{sessionNumber});
+      if(GetProperty(session, &quot;Busy&quot;) == true) { return; }
+      object info = GetProperty(session, &quot;Info&quot;);
+      if(GetProperty(info, &quot;IsLowSpeedConnection&quot;) == true) { return; }
+    } catch {
+      return;
+    }
+
+    dynamic ID = null;
+
+    //&gt;Insert your SAP GUI Scripting code here&lt;
+
+    SetProperty(app, "HistoryEnabled", new object[1]{true});
+
+    FreeObject(session);
+    FreeObject(connection);
+    FreeObject(app);
+    FreeObject(SapGuiAuto);
+
+  }
+
+}
+
+//-End------------------------------------------------------------------
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>Wait until keypressed</title>
+    <language>CSharp</language>
+    <ui>All</ui>
+    <code>
+Console.ReadKey();
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>UiPath (Windows - Legacy)</title>
+    <language>CSharp</language>
+    <ui>SAPGUI</ui>
+    <code>
+//-Begin----------------------------------------------------------------
+
+//-CreateObject---------------------------------------------------------
+Func &lt;string, object&gt; CreateObject = (string ProgId) =&gt; {
+  return Microsoft.VisualBasic.Interaction.CreateObject(ProgId, null);
+};
+
+//-GetObject------------------------------------------------------------
+Func &lt;string, object&gt; GetObject = (string Class) =&gt; {
+  return Microsoft.VisualBasic.Interaction.GetObject(Class);
+};
+
+//-InvokeMethod---------------------------------------------------------
+Func &lt;object, string, object[], dynamic&gt; InvokeMethod = (object obj, string methodName, object[] methodParams) =&gt; {
+  return obj.GetType().InvokeMember(methodName, System.Reflection.BindingFlags.InvokeMethod, null, obj, methodParams);
+};
+
+//-GetProperty----------------------------------------------------------
+Func &lt;object, string, object[], dynamic&gt; GetProperty = (object obj, string propertyName, object[] propertyParams) =&gt; {
+  return obj.GetType().InvokeMember(propertyName, System.Reflection.BindingFlags.GetProperty, null, obj, propertyParams);
+};
+
+//-SetProperty----------------------------------------------------------
+Func &lt;object, string, object[], dynamic&gt; SetProperty = (object obj, string propertyName, object[] propertyParams) =&gt; {
+  return obj.GetType().InvokeMember(propertyName, System.Reflection.BindingFlags.SetProperty, null, obj, propertyParams);
+};
+
+//-FreeObject-----------------------------------------------------------
+Action &lt;object&gt; FreeObject = (object obj) =&gt; {
+  System.Runtime.InteropServices.Marshal.ReleaseComObject(obj);
+};
+
+object SapGuiAuto = null;
+object app = null;
+object connection = null;
+object session = null;
+
+try {
+  SapGuiAuto = GetObject(&quot;SAPGUI&quot;);
+  app = InvokeMethod(SapGuiAuto, &quot;GetScriptingEngine&quot;, new object[0]);
+  SetProperty(app, &quot;HistoryEnabled&quot;, new object[1]{false});
+  connection = GetProperty(app, &quot;Children&quot;, new object[1]{0});
+  session = GetProperty(connection, &quot;Children&quot;, new object[1]{0});
+  if(GetProperty(session, &quot;Busy&quot;, new object[0]) == true) {
+    return;
+  }
+  object info = GetProperty(session, &quot;Info&quot;, new object[0]);
+  if(GetProperty(info, &quot;IsLowSpeedConnection&quot;, new object[0]) == true) {
+    return;
+  }
+} catch {
+  return;
+}
+
+dynamic ID = null;
+
+//&gt;Insert your SAP GUI Scripting code here&lt;
+
+FreeObject(session);
+FreeObject(connection);
+FreeObject(app);
+FreeObject(SapGuiAuto);
+
+//-End------------------------------------------------------------------
+</code>
+  </snippet>
+
+
+
+  <snippet>
+    <title>UiPath (Windows)</title>
+    <language>CSharp</language>
+    <ui>SAPGUI</ui>
+    <code>
+//-Begin----------------------------------------------------------------
+
+//-Load Assembly--------------------------------------------------------
+string VisualBasicCore = &quot;Microsoft.VisualBasic.Core, Version=10.0.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a&quot;;
+System.Reflection.Assembly VisualBasicCoreAssembly = System.Reflection.Assembly.Load(VisualBasicCore);
+System.Type VisualBasicInteractionType = VisualBasicCoreAssembly.GetType(&quot;Microsoft.VisualBasic.Interaction&quot;);
+object VisualBasicInteraction = System.Runtime.Serialization.FormatterServices.GetUninitializedObject(VisualBasicInteractionType);
+
+//-InvokeMethod---------------------------------------------------------
+Func &lt;object, string, object[], dynamic&gt; InvokeMethod = (object obj, string methodName, object[] methodParams) =&gt; {
+  return obj.GetType().InvokeMember(methodName, System.Reflection.BindingFlags.InvokeMethod, null, obj, methodParams)!;
+};
+
+//-GetProperty----------------------------------------------------------
+Func &lt;object, string, object[], dynamic&gt; GetProperty = (object obj, string propertyName, object[] propertyParams) =&gt; {
+  return obj.GetType().InvokeMember(propertyName, System.Reflection.BindingFlags.GetProperty, null, obj, propertyParams)!;
+};
+
+//-SetProperty----------------------------------------------------------
+Func &lt;object, string, object[], dynamic&gt; SetProperty = (object obj, string propertyName, object[] propertyParams) =&gt; {
+  return obj.GetType().InvokeMember(propertyName, System.Reflection.BindingFlags.SetProperty, null, obj, propertyParams)!;
+};
+
+//-FreeObject-----------------------------------------------------------
+Action &lt;object&gt; FreeObject = (object obj) =&gt; {
+  System.Runtime.InteropServices.Marshal.ReleaseComObject(obj);
+};
+
+object? SapGuiAuto;
+object app;
+object connection;
+object session;
+
+try {
+  SapGuiAuto = InvokeMethod(VisualBasicInteraction, &quot;GetObject&quot;, new object[2] { &quot;SAPGUI&quot;, null });
+  app = InvokeMethod(SapGuiAuto, &quot;GetScriptingEngine&quot;, new object[0]);
+  SetProperty(app, &quot;HistoryEnabled&quot;, new object[1]{false});
+  connection = GetProperty(app, &quot;Children&quot;, new object[1]{0});
+  session = GetProperty(connection, &quot;Children&quot;, new object[1]{0});
+  if(GetProperty(session, &quot;Busy&quot;, new object[0]) == true) {
+    return;
+  }
+  object info = GetProperty(session, &quot;Info&quot;, new object[0]);
+  if(GetProperty(info, &quot;IsLowSpeedConnection&quot;, new object[0]) == true) {
+    return;
+  }
+} catch {
+  return;
+}
+
+dynamic ID;
+
+//&gt;Insert your SAP GUI Scripting code here&lt;
+
+FreeObject(session);
+FreeObject(connection);
+FreeObject(app);
+FreeObject(SapGuiAuto);
+
+//-End------------------------------------------------------------------
+</code>
+  </snippet>
+
+
+  <snippet>
+    <title>Blue Prism</title>
+    <language>CSharp</language>
+    <ui>SAPGUI</ui>
+    <code>
+//-Begin----------------------------------------------------------------
+
+dynamic InvokeMethod(object obj, string methodName, object[] methodParams = null) {
+  return obj.GetType().InvokeMember(methodName, BindingFlags.InvokeMethod, null, obj, methodParams);
+}
+
+dynamic GetProperty(object obj, string propertyName, object[] propertyParams = null) {
+  return obj.GetType().InvokeMember(propertyName, BindingFlags.GetProperty, null, obj, propertyParams);
+}
+
+dynamic SetProperty(object obj, string propertyName, object[] propertyParams = null) {
+  return obj.GetType().InvokeMember(propertyName, BindingFlags.SetProperty, null, obj, propertyParams);
+}
+
+object SapGuiAuto = null;
+object app = null;
+object connection = null;
+object session = null;
+
+int connectionNumber = 0;
+int sessionNumber = 0;
+
+try {
+  SapGuiAuto = Interaction.GetObject(&quot;SAPGUI&quot;);
+  app = InvokeMethod(SapGuiAuto, &quot;GetScriptingEngine&quot;);
+  connection = GetProperty(app, &quot;Children&quot;, new object[1]{connectionNumber});
+  if(GetProperty(connection, &quot;DisabledByServer&quot;) == true) { return; }
+  session = GetProperty(connection, &quot;Children&quot;, new object[1]{sessionNumber});
+  if(GetProperty(session, &quot;Busy&quot;) == true) { return; }
+  object info = GetProperty(session, &quot;Info&quot;);
+  if(GetProperty(info, &quot;IsLowSpeedConnection&quot;) == true) { return; }
+} catch {
+  return;
+}
+
+dynamic ID = null;
+
+//&gt;Insert your SAP GUI Scripting code here&lt;
+
+//-End------------------------------------------------------------------
+</code>
+  </snippet>
+
+
+
+</snippets>
