@@ -2,58 +2,87 @@
 
 '-Directives----------------------------------------------------------
 Option Explicit
+On Error Resume Next
 
 '-Variables-----------------------------------------------------------
-Dim WSHShell, SAPGUIPath, SID, InstanceNo, WinTitle, currentDate, currentDate2, totalPicking, totalPacking, jsonExport, strFileName, objFS, oFile, application, SapGuiAuto, connection, session
+Dim WSHShell, SAPGUIPath, SID, InstanceNo, WinTitle, currentDate, currentDate2, totalPicking, totalPacking, jsonExport, strFileName, objFS, oFile, application, SapGuiAuto, connection, session, connected
 
-'-Main----------------------------------------------------------------
+'-Help functions -----------------------------------------------------
+Dim shl, mType
+
+currentDate = Day(Now) & "-" & Month(Now) & "-" & Year(Now)
+
+Sub WriteLog(mType, strMessage)
+	Set shl = CreateObject("WScript.Shell")
+   Call shl.LogEvent(mType, WScript.ScriptName & " " & strMessage)
+   Set shl = Nothing
+   ' 0    SUCCESS
+   ' 1    ERROR
+   ' 2    WARNING
+   ' 4    INFORMATION
+   ' 8    AUDIT_SUCCESS
+   ' 16   AUDIT_FAILURE
+End Sub
+
+'-Connection----------------------------------------------------------------
 Set WSHShell = WScript.CreateObject("WScript.Shell")
 If IsObject(WSHShell) Then
-'-Set the path to the SAP GUI directory---------------------------
-SAPGUIPath = "C:\Program Files (x86)\SAP\FrontEnd\SAPgui\"
+   '-Set the path to the SAP GUI directory---------------------------
+   SAPGUIPath = "C:\Program Files (x86)\SAP\FrontEnd\SAPgui\"
 
-'-Set the SAP system ID-------------------------------------------
-SID = "WGP"
+   '-Set the SAP system ID-------------------------------------------
+   SID = "WGP"
 
-'-Starts the SAP GUI----------------------------------------------
-WSHShell.Exec SAPGUIPath & "sapshcut.exe start -system=" & SID & " -maxgui"
-Set WSHShell = Nothing
+   '-Starts the SAP GUI----------------------------------------------
+   WSHShell.Exec SAPGUIPath & "sapshcut.exe start -system=" & SID & " -maxgui"   
+   Set WSHShell = Nothing
 End If
 
-WScript.Sleep(7000)
-If Not IsObject(application) Then
-   Set SapGuiAuto  = GetObject("SAPGUI")
-   Set application = SapGuiAuto.GetScriptingEngine
-End If
-WScript.Sleep(2000)
-If Not IsObject(connection) Then
-   Set connection = application.Children(0)
-End If
-WScript.Sleep(2000)
-If Not IsObject(session) Then
-   Set session    = connection.Children(0)
-End If
-WScript.Sleep(2000)
-If IsObject(WScript) Then
-   WScript.ConnectObject session,     "on"
-   WScript.ConnectObject application, "on"
-End If
-WScript.Sleep(2000)
-If session.children.count > 1 Then
-   session.findById("wnd[1]/usr/radMULTI_LOGON_OPT1").select
-   session.findById("wnd[1]/usr/radMULTI_LOGON_OPT1").setFocus
-   session.findById("wnd[1]/tbar[0]/btn[0]").press
-End If 
-Action(session)
+connected = false
 
-'-End-------------------------------------------------------------------
+Do While connected = false
+   WriteLog 4, "Trying to get Scripting Engine."   
+   If Not IsObject(application) Then
+      Set SapGuiAuto  = GetObject("SAPGUI")
+      Set application = SapGuiAuto.GetScriptingEngine
+   End If
+   WriteLog 4, "Trying to stablish connection." 
+   If Not IsObject(connection) Then
+      Set connection = application.Children(0)
+   End If
+   WriteLog 4, "Trying to get session." 
+   If Not IsObject(session) Then
+      Set session    = connection.Children(0)
+   End If
+   WriteLog 4, "Connecting to session and app."    
+   If IsObject(WScript) Then
+      WScript.ConnectObject session,     "on"
+      WScript.ConnectObject application, "on"
+   End If
+   WriteLog 4, "Checking for another login."  
+   If session.children.count > 1 Then
+      WriteLog 4, "There is another login."
+      session.findById("wnd[1]/usr/radMULTI_LOGON_OPT1").select
+      session.findById("wnd[1]/usr/radMULTI_LOGON_OPT1").setFocus
+      session.findById("wnd[1]/tbar[0]/btn[0]").press
+   End If    
+   wscript.echo err.description
+   If Err.Number = 0 Then
+      WriteLog 4, "We're connected."  
+      Action(session)
+      connected = true
+   End If
+   Err.Clear 
+   WScript.sleep 1000
+Loop
+'-End Connection------------------------------------------------------------
 
 
 Sub Action(session)
    Dim oShell : Set oShell = CreateObject("WScript.Shell")
    
-   currentDate = Day(Now) & "." & Month(Now) & "." & Year(Now)
-   currentDate2 = Day(Now) & "-" & Month(Now) & "-" & Year(Now)
+   currentDate2 = Day(Now) & "." & Month(Now) & "." & Year(Now)
+   currentDate = Day(Now) & "-" & Month(Now) & "-" & Year(Now)
 
    session.findById("wnd[0]/tbar[0]/okcd").text = "/nvl06f"
    session.findById("wnd[0]").sendVKey 0
@@ -71,12 +100,12 @@ Sub Action(session)
       session.findById("wnd[1]").sendVKey 2
       session.findById("wnd[2]/usr/cntlOPTION_CONTAINER/shellcont/shell").setCurrentCell 2,"TEXT"
       session.findById("wnd[2]/usr/cntlOPTION_CONTAINER/shellcont/shell").doubleClickCurrentCell
-      session.findById("wnd[1]/usr/ssub%_SUBSCREEN_FREESEL:SAPLSSEL:1105/ctxt%%DYN001-LOW").text = currentDate
+      session.findById("wnd[1]/usr/ssub%_SUBSCREEN_FREESEL:SAPLSSEL:1105/ctxt%%DYN001-LOW").text = currentDate2
       session.findById("wnd[1]").sendVKey 0
       totalPicking = session.findById("wnd[0]/usr/cntlGRID1/shellcont/shell").rowCount
       session.findById("wnd[0]/tbar[1]/btn[43]").press
       session.findById("wnd[1]/usr/ctxtDY_PATH").text = "C:\Users\u081715\OneDrive - WAGO\Desktop\TEMP\Automations\Extract count of deliveries\NEW"
-      session.findById("wnd[1]/usr/ctxtDY_FILENAME").text = "UK-NO-PICKING" & "_" & currentDate2 & ".XLSX"
+      session.findById("wnd[1]/usr/ctxtDY_FILENAME").text = "UK-NO-PICKING" & "_" & currentDate & ".XLSX"
       session.findById("wnd[1]/usr/ctxtDY_FILENAME").caretPosition = 13
       session.findById("wnd[1]/tbar[0]/btn[0]").press
       oShell.Run "taskkill /f /im excel.exe"  
@@ -99,12 +128,12 @@ Sub Action(session)
       session.findById("wnd[1]").sendVKey 2
       session.findById("wnd[2]/usr/cntlOPTION_CONTAINER/shellcont/shell").setCurrentCell 2,"TEXT"
       session.findById("wnd[2]/usr/cntlOPTION_CONTAINER/shellcont/shell").doubleClickCurrentCell
-      session.findById("wnd[1]/usr/ssub%_SUBSCREEN_FREESEL:SAPLSSEL:1105/ctxt%%DYN001-LOW").text = currentDate
+      session.findById("wnd[1]/usr/ssub%_SUBSCREEN_FREESEL:SAPLSSEL:1105/ctxt%%DYN001-LOW").text = currentDate2
       session.findById("wnd[1]").sendVKey 0
       totalPacking = session.findById("wnd[0]/usr/cntlGRID1/shellcont/shell").rowCount
       session.findById("wnd[0]/tbar[1]/btn[43]").press
       session.findById("wnd[1]/usr/ctxtDY_PATH").text = "C:\Users\u081715\OneDrive - WAGO\Desktop\TEMP\Automations\Extract count of deliveries\NEW"
-      session.findById("wnd[1]/usr/ctxtDY_FILENAME").text = "UK-NO-PACKING" & "_" & currentDate2 & ".XLSX"
+      session.findById("wnd[1]/usr/ctxtDY_FILENAME").text = "UK-NO-PACKING" & "_" & currentDate & ".XLSX"
       session.findById("wnd[1]/usr/ctxtDY_FILENAME").caretPosition = 13
       session.findById("wnd[1]/tbar[0]/btn[0]").press
       oShell.Run "taskkill /f /im excel.exe"

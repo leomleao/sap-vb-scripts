@@ -13,3 +13,5 @@ Sub WriteLog(strMessage)
  
 	oFile.WriteLine strMessage
 End Sub
+
+WScript.echo Now
