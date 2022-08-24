@@ -102,8 +102,6 @@ Sub Action(session)
     gridView = "wnd[0]/usr/cntlCUSTOM/shellcont/shell/shellcont/shell"
     rowCount = session.findById(gridView).rowCount
 
-
-
     For i = 0 To rowCount - 1 : Do
     reqQty = session.findById(gridView).getCellValue(i,"MENGE")
     withdrawlQty = session.findById(gridView).getCellValue(i,"DENMNG")
