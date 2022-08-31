@@ -66,7 +66,6 @@ Do While connected = false
       session.findById("wnd[1]/usr/radMULTI_LOGON_OPT1").setFocus
       session.findById("wnd[1]/tbar[0]/btn[0]").press
    End If    
-   wscript.echo err.description
    If Err.Number = 0 Then
       WriteLog 4, "We're connected."  
       Action(session)
