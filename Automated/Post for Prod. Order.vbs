@@ -102,6 +102,12 @@ Sub Action(session)
     gridView = "wnd[0]/usr/cntlCUSTOM/shellcont/shell/shellcont/shell"
     rowCount = session.findById(gridView).rowCount
 
+    If rowCount = 0 Then
+        session.findById("wnd[0]/tbar[0]/okcd").text = "/nex"
+        session.findById("wnd[0]").sendVKey 0
+        Exit Sub
+    End If
+
     For i = 0 To rowCount - 1 : Do
     reqQty = session.findById(gridView).getCellValue(i,"MENGE")
     withdrawlQty = session.findById(gridView).getCellValue(i,"DENMNG")
@@ -199,6 +205,12 @@ Sub Action(session)
             session.findById("wnd[0]").sendVKey 0
             Exit Sub
         End If
+    End If
+
+    If session.findById(gridView).rowCount = 0 Then
+        session.findById("wnd[0]/tbar[0]/okcd").text = "/nex"
+        session.findById("wnd[0]").sendVKey 0
+        Exit Sub
     End If
 
     session.findById("wnd[0]/usr/cntlCUSTOM/shellcont/shell/shellcont/shell").pressToolbarButton "&NAVIGATION_PROFILE_TOOLBAR_EXPAND"
