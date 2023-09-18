@@ -98,10 +98,12 @@ Sub Action(session)
    session.findById("wnd[1]/usr/ctxtDY_FILENAME").text = "EXPORT.XLSX"
    session.findById("wnd[1]/tbar[0]/btn[11]").press
    oShell.Run "taskkill /f /im excel.exe" 
+
    
    WriteLog 0, "All done, closing down."  
    session.findById("wnd[0]/tbar[0]/okcd").text = "/nex"
    session.findById("wnd[0]").sendVKey 0
+   oShell.Run "taskkill /f /im saplogon.exe"    
    
 End Sub
 

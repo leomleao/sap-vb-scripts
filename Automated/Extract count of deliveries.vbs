@@ -105,7 +105,6 @@ Sub Action(session)
       session.findById("wnd[0]/tbar[1]/btn[43]").press
       session.findById("wnd[1]/usr/ctxtDY_PATH").text = "C:\Users\u081715\OneDrive - WAGO\Desktop\TEMP\Automations\Extract count of deliveries\NEW"
       session.findById("wnd[1]/usr/ctxtDY_FILENAME").text = "UK-NO-PICKING" & "_" & currentDate & ".XLSX"
-      session.findById("wnd[1]/usr/ctxtDY_FILENAME").caretPosition = 13
       session.findById("wnd[1]/tbar[0]/btn[0]").press
       oShell.Run "taskkill /f /im excel.exe"  
    End If  

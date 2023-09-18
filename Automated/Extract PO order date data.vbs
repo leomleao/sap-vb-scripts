@@ -6,7 +6,7 @@ On Error Resume Next
 
 '-Variables-----------------------------------------------------------
 Dim WSHShell, SAPGUIPath, SID, InstanceNo, application, SapGuiAuto, connection, session, currentDate, connected
-Dim strFileName, objFS, oFile, FOR_APPENDING, strMessage
+Dim strFileName, objFS, oFile, FOR_APPENDING, strMessage, i
 
 '-Help functions -----------------------------------------------------
 Dim shl, mType
@@ -79,47 +79,48 @@ Loop
 
 
 Sub Action(session)
-   WriteLog 4, "Performing script." 
-   Dim oShell : Set oShell = CreateObject("WScript.Shell")  
+    WriteLog 4, "Performing script." 
+    Dim oShell : Set oShell = CreateObject("WScript.Shell")  
 
-   WriteLog 4, "Opening ZSDVA05."  
-   session.findById("wnd[0]/tbar[0]/okcd").text = "/nZSDVA05"
-   session.findById("wnd[0]").sendVKey 0
-   session.findById("wnd[0]/tbar[1]/btn[17]").press
-   session.findById("wnd[1]/usr/txtV-LOW").text = "/UKDAILYOPEN"
-   session.findById("wnd[1]/usr/txtENAME-LOW").text = ""
-   session.findById("wnd[1]/tbar[0]/btn[8]").press
-   ' session.findById("wnd[0]/usr/ctxtS_VBELN-LOW").text = "16072675"
-   session.findById("wnd[0]/tbar[1]/btn[8]").press
-   WriteLog 4, "Extracting report in spreasheet."  
-   session.findById("wnd[0]/tbar[1]/btn[43]").press 
+    WriteLog 4, "Opening SQ01."  
+    session.findById("wnd[0]/tbar[0]/okcd").text = "/nsq01"
 
-   session.findById("wnd[1]/usr/ctxtDY_PATH").text = "C:\Users\u081715\OneDrive - WAGO\General - S_Rug_Accounts & IT\Daily Order & Sales Report"
-   session.findById("wnd[1]/usr/ctxtDY_FILENAME").text = "ukDailyOpen.XLSX"
-   session.findById("wnd[1]/tbar[0]/btn[11]").press
-   oShell.Run "taskkill /f /im excel.exe" 
+    session.findById("wnd[0]").sendVKey 0
+    session.findById("wnd[0]/mbar/menu[5]/menu[0]").select
+    session.findById("wnd[1]/usr/radRAD1").select
+    session.findById("wnd[1]/tbar[0]/btn[2]").press
+    session.findById("wnd[0]/mbar/menu[1]/menu[2]").select
 
-   WriteLog 4, "Opening ZSDVA05."  
-   session.findById("wnd[0]/tbar[0]/okcd").text = "/nZSDVA05"
-   session.findById("wnd[0]").sendVKey 0
-   session.findById("wnd[0]/tbar[1]/btn[17]").press
-   session.findById("wnd[1]/usr/txtV-LOW").text = "/UKDELIVERED"
-   session.findById("wnd[1]/usr/txtENAME-LOW").text = ""
-   session.findById("wnd[1]/tbar[0]/btn[8]").press
-   ' session.findById("wnd[0]/usr/ctxtS_VBELN-LOW").text = "16072675"
-   session.findById("wnd[0]/tbar[1]/btn[8]").press
-   WriteLog 4, "Extracting report in spreasheet."  
-   session.findById("wnd[0]/tbar[1]/btn[43]").press 
+    WriteLog 4, "Selecting the user group."   
+    For i = 0 To session.findById("wnd[1]/usr/cntlGRID1/shellcont/shell").rowcount - 1
+        WriteLog 4, Err.Description   
+        If session.findById("wnd[1]/usr/cntlGRID1/shellcont/shell").getCellValue(i,"DBGBNUM") = "Z_MM_UK" Then
+            WriteLog 4, "Found the key."   
+            session.findById("wnd[1]/usr/cntlGRID1/shellcont/shell").selectedRows = i
+        End If
+    Next
 
-   session.findById("wnd[1]/usr/ctxtDY_PATH").text = "C:\Users\u081715\OneDrive - WAGO\General - S_Rug_Accounts & IT\Daily Order & Sales Report"
-   session.findById("wnd[1]/usr/ctxtDY_FILENAME").text = "ukDelivered.XLSX"
-   session.findById("wnd[1]/tbar[0]/btn[11]").press
-   oShell.Run "taskkill /f /im excel.exe"    
-   
-   WriteLog 0, "All done, closing down."  
-   session.findById("wnd[0]/tbar[0]/okcd").text = "/nex"
-   session.findById("wnd[0]").sendVKey 0
+    session.findById("wnd[1]/tbar[0]/btn[0]").press
+    session.findById("wnd[0]/usr/cntlGRID_CONT0050/shellcont/shell").currentCellRow = 8
+    session.findById("wnd[0]/usr/ctxtRS38R-QNUM").text = "PROD_ORD_DATE"
+    session.findById("wnd[0]/tbar[1]/btn[8]").press
+    session.findById("wnd[0]/tbar[1]/btn[8]").press
+
+    WriteLog 4, "Extracting report in spreasheet."
+    session.findById("wnd[0]/usr/cntlCONTAINER/shellcont/shell").pressToolbarContextButton "&MB_EXPORT"
+    session.findById("wnd[0]/usr/cntlCONTAINER/shellcont/shell").selectContextMenuItem "&XXL"
+
+    session.findById("wnd[1]/usr/ctxtDY_PATH").text = "C:\Users\u081715\OneDrive - WAGO\08_Rugby All\Production\Production_Schedule\Data"
+    session.findById("wnd[1]/usr/ctxtDY_FILENAME").text = "PO 1 conf dates.XLSX"
+    session.findById("wnd[1]/tbar[0]/btn[11]").press
+    oShell.Run "taskkill /f /im excel.exe" 
+
+
+    WriteLog 0, "All done, closing down."  
+    session.findById("wnd[0]/tbar[0]/okcd").text = "/nex"
+    session.findById("wnd[0]").sendVKey 0
    oShell.Run "taskkill /f /im saplogon.exe"    
+
    
 End Sub
 
