@@ -5,7 +5,7 @@ Option Explicit
 On Error Resume Next
 
 '-Variables-----------------------------------------------------------
-Dim WSHShell, SAPGUIPath, SID, InstanceNo, application, SapGuiAuto, connection, session, connected, d, e, i, j, gridView, rowCount, productionOrders, reqQty, withdrawlQty, qtyItems, attempts, test
+Dim WSHShell, SAPGUIPath, SID, InstanceNo, application, SapGuiAuto, connection, session, connected, d, e, i, j, y, q, u, gridView, reqQty, withdrawlQty, rowCount, visibleRowCount, iterations, productionOrders, reqQty, withdrawlQty, qtyItems, attempts, test
 
 '-Help functions -----------------------------------------------------
 Dim svc, sQuery, cProc, iniProc
@@ -118,75 +118,61 @@ Sub Action(session)
 
     productionOrders = removeDuplicates(productionOrders)
 
-    session.findById("wnd[0]/tbar[0]/okcd").text = "/nMB1A"
-    session.findById("wnd[0]").sendVKey 0
 
-    session.findById("wnd[0]/usr/ctxtRM07M-BWARTWA").text = "261"
-    session.findById("wnd[0]/usr/ctxtRM07M-WERKS").text = "0008"
-    session.findById("wnd[0]/usr/ctxtRM07M-LGORT").text = "0001"
-
-    ' strData = "3847118,3847139,3847151,3847153,3847154,3847158,3847159,3849575,3849692,3849700,3849702,3849703,3849704,3849705,3849707,3849708,3849710,3849711,3849714,3849717,3849719,3849720,3849721,3849723,3849727"
-
-    ' productionOrders = Split(strData,",")
-
+    ' Section to go on the POs, remove TECO and remove the Final issue Flag for each unpicked component line
     For i = 0 To UBound(productionOrders) : Do
-        session.findById("wnd[0]/tbar[1]/btn[13]").press
-        session.findById("wnd[1]/usr/sub:SAPMM07M:1405/ctxtRM07M-AUFNR[0,0]").text = productionOrders(i)
-        session.findById("wnd[1]").sendVKey 0 
 
-        If Session.ActiveWindow.Name = "wnd[2]" Then
-            session.findById("wnd[2]/tbar[0]/btn[0]").press
-            session.findById("wnd[1]/tbar[0]/btn[12]").press
-            Exit Do 
-        End if
-        
-        qtyItems = session.findById("wnd[0]/usr/txtRM07M-POSNM").text
+      session.findById("wnd[0]/tbar[0]/okcd").text = "/nco02"
+      session.findById("wnd[0]").sendVKey 0
+      session.findById("wnd[0]/usr/ctxtCAUFVD-AUFNR").text = productionOrders(i)
+      session.findById("wnd[0]").sendVKey 0
 
-        If qtyItems > 31 Then
-            For j = 1 To 31
-                session.findById("wnd[0]/usr/sub:SAPMM07M:0421/ctxtMSEG-CHARG[" & j - 1 &",53]").text = "0000999908"
-            Next 
-            session.findById("wnd[0]/tbar[0]/btn[82]").press
-            For j = 1 To qtyItems - 31
-                session.findById("wnd[0]/usr/sub:SAPMM07M:0421/ctxtMSEG-CHARG[" & j - 1 &",53]").text = "0000999908"
-            Next 
-        Else
-            For j = 1 To qtyItems
-                session.findById("wnd[0]/usr/sub:SAPMM07M:0421/ctxtMSEG-CHARG[" & j - 1 &",53]").text = "0000999908"
-            Next
-        End If 
+      If Session.ActiveWindow.Name = "wnd[1]" Then
+         If InStr(session.findById("wnd[1]/usr/txtMESSTXT1").text,"""Change"" is not allowed") > 0 Then
+            session.findById("wnd[1]/tbar[0]/btn[0]").press
+            session.findById("wnd[0]/mbar/menu[1]/menu[7]/menu[4]").select
+         End if
+      End if
+      session.findById("wnd[0]/tbar[1]/btn[6]").press
+      visibleRowCount = session.findById("wnd[0]/usr/tblSAPLCOMKTCTRL_0120").visiblerowcount
+      'Total of rows in the table
+      rowCount = session.findById("wnd[0]/usr/txtRC27X-ENTRIES").text
+      'How many iterations needs to be done to process every single line
+      iterations = rowCount \ visibleRowCount
 
-        If session.findById("wnd[0]/sbar/pane[0]").text <> "" Then
-        session.findById("wnd[0]").sendVKey 0 
-        End If      
+      For y = 0 To iterations
+         For q = 0 To visibleRowCount - 1
+            qtyReq = session.findById("wnd[0]/usr/tblSAPLCOMKTCTRL_0120/txtRESBD-MENGE[3," & q &"]").text
+            qtyWithdrawn = session.findById("wnd[0]/usr/tblSAPLCOMKTCTRL_0120/txtRESBD-DENMNG[4," & q &"]").text
+            If qtyWithdrawn < qtyReq Then
+               If Not session.findById("wnd[0]/usr/tblSAPLCOMKTCTRL_0120/chkRESBD-XLOEK[17," & q &"]").selected Then
+                  session.findById("wnd[0]/usr/tblSAPLCOMKTCTRL_0120/chkRESBD-KZEAR[23," & q &"]").selected = false
+               End If
+            End If
+         Next 
+         'Press page down button (Not tcode specific)
+         session.findById("wnd[0]/tbar[0]/btn[82]").press
+      Next     
 
-        session.findById("wnd[0]/tbar[1]/btn[9]").press
-
-        If session.findById("wnd[0]/sbar/pane[0]").text <> "" Then
-        session.findById("wnd[0]").sendVKey 0 
-        End If 
-        session.findById("wnd[0]/tbar[0]/btn[11]").press
-
-        test = true
-        attempts = 0
-
-        Do
-            If session.findById("wnd[0]/sbar/pane[0]").text <> "" Then
-                WScript.Sleep 500
-                If InStr(session.findById("wnd[0]/sbar/pane[0]").text,"Deficit of BA Unrestricted-use") > 0 Then
-                    session.findById("wnd[0]/usr/txtMSEG-ERFMG").text = 0            
-                End If
-                session.findById("wnd[0]").sendVKey 0 
-                attempts = attempts + 1
-                If attempts > qtyItems Then
-                    test = false
-                End If
-            Else
-                test = false
-            End If 
-        Loop While test = true
-        
+      'Save
+      session.findById("wnd[0]/tbar[0]/btn[11]").press   
     Loop While False: Next
+    ' END Section to go on the POs, remove TECO and remove the Final issue Flag for each unpicked component line
+
+    ' Picking in CO27
+    For u = 0 To UBound(productionOrders) : Do
+        session.findById("wnd[0]/tbar[0]/okcd").text = "/nco27"
+        session.findById("wnd[0]").sendVKey 0
+        session.findById("wnd[0]/usr/ctxtS_AUFNR-LOW").text = productionOrders(i)
+        session.findById("wnd[0]/tbar[1]/btn[8]").press
+        session.findById("wnd[0]/usr/cntlGRID_0100/shellcont/shell").currentCellColumn = ""
+        session.findById("wnd[0]/usr/cntlGRID_0100/shellcont/shell").selectedRows = "0"
+        session.findById("wnd[0]/tbar[1]/btn[8]").press
+        session.findById("wnd[0]/usr/subPUSHBUTTON:SAPLCOWB:0400/btnMALL").press
+        session.findById("wnd[0]/usr/subPUSHBUTTON:SAPLCOWB:0400/btnCHFI").press
+        session.findById("wnd[0]/tbar[0]/btn[11]").press
+    Loop While False: Next
+    ' END Picking in CO27
 
     session.findById("wnd[0]/tbar[0]/okcd").text = "/nCOOIS"
     session.findById("wnd[0]").sendVKey 0     
